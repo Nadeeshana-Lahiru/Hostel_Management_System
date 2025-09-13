@@ -55,7 +55,16 @@ class RoomAllocationController extends WardenBaseController
         $currentStudents = $room->students;
         $unassignedStudents = Student::whereNull('room_id')->orderBy('full_name')->get();
 
-        return view('warden.allocations.form', compact('room', 'currentStudents', 'unassignedStudents'));
+        // NEW: Get other available rooms in the same hostel for the "Change Room" modal
+        $availableRooms = $this->hostel->rooms()
+            ->where('id', '!=', $room->id)
+            ->withCount('students')
+            ->get()
+            ->filter(function ($r) {
+                return $r->students_count < $r->capacity;
+            });
+
+        return view('warden.allocations.form', compact('room', 'currentStudents', 'unassignedStudents', 'availableRooms'));
     }
 
     /**
@@ -86,5 +95,33 @@ class RoomAllocationController extends WardenBaseController
         // Redirect to the WARDEN's allocation form route
         return redirect()->route('warden.allocations.showAllocationForm', $room->id)
                          ->with('success', "{$student->full_name} has been assigned to Room {$room->room_number}.");
+    }
+
+    /**
+     * NEW METHOD: Handles the final confirmation and re-assignment of a student.
+     */
+    public function confirmReassign(Request $request, Student $student, Room $new_room)
+    {
+        // Security Check 1: Ensure the student being moved is from the warden's hostel.
+        if (is_null($student->room) || $student->room->hostel_id !== $this->hostel->id) {
+            return redirect()->back()->with('error', 'You can only re-assign students from your hostel.');
+        }
+        
+        // Security Check 2: Ensure the target room is also in the warden's hostel.
+        if ($new_room->hostel_id !== $this->hostel->id) {
+            return redirect()->back()->with('error', 'You can only re-assign students to rooms in your hostel.');
+        }
+
+        // Check capacity of the new room
+        if ($new_room->students()->count() >= $new_room->capacity) {
+            return redirect()->back()->with('error', 'The selected new room is already full!');
+        }
+
+        $originalRoomId = $student->room_id;
+        $student->room_id = $new_room->id;
+        $student->save();
+
+        return redirect()->route('warden.allocations.showAllocationForm', $originalRoomId)
+                         ->with('success', "{$student->full_name} has been moved to Room {$new_room->room_number}.");
     }
 }

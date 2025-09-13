@@ -78,6 +78,8 @@ Route::prefix('warden')->name('warden.')->group(function () {
     Route::get('room-allocation/{hostel}', [\App\Http\Controllers\Warden\RoomAllocationController::class, 'showHostelRooms'])->name('allocations.showHostelRooms');
     Route::get('room-allocation/room/{room}', [\App\Http\Controllers\Warden\RoomAllocationController::class, 'showAllocationForm'])->name('allocations.showAllocationForm');
     Route::post('room-allocation/room/{room}', [\App\Http\Controllers\Warden\RoomAllocationController::class, 'assignStudent'])->name('allocations.assignStudent');
+    // ADD THIS NEW ROUTE for the final re-assignment step
+    Route::post('allocations/reassign-confirm/{student}/{new_room}', [\App\Http\Controllers\Warden\RoomAllocationController::class, 'confirmReassign'])->name('allocations.confirmReassign');
 
     // Complaints
     Route::get('complaints', [\App\Http\Controllers\Warden\ComplaintController::class, 'index'])->name('complaints.index');
