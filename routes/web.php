@@ -22,6 +22,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Add this line for Hostel Management
     Route::resource('hostels', \App\Http\Controllers\Admin\HostelController::class);
     Route::get('hostels/room/{room}', [\App\Http\Controllers\Admin\HostelController::class, 'showRoomDetails'])->name('hostels.showRoomDetails');
+    // ADD THIS NEW ROUTE for assigning a warden
+    Route::patch('hostels/{hostel}/assign-warden', [\App\Http\Controllers\Admin\HostelController::class, 'assignWarden'])->name('hostels.assignWarden');
 
     // Add this line for Student Management
     Route::resource('students', \App\Http\Controllers\Admin\StudentController::class);

@@ -111,6 +111,40 @@
     }
     .btn-filter { background-color: #4e73df; }
     .btn-clear { background-color: #858796; }
+
+    /* --- NEW MODAL STYLES --- */
+    .modal {
+        display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+        width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        background-color: #fefefe; margin: 10% auto; padding: 25px; border-radius: 8px;
+        width: 90%; max-width: 600px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #e3e6f0; }
+    .modal-header h3 { margin: 0; }
+    .current-warden { background-color: #f8f9fc; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem; }
+    .warden-table-container { max-height: 250px; overflow-y: auto; margin-top: 1rem; border: 1px solid #e3e6f0; border-radius: 5px; }
+    .warden-table { width: 100%; border-collapse: collapse; }
+    .warden-table th, .warden-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e3e6f0; }
+    .warden-table thead { position: sticky; top: 0; background-color: #f8f9fc; }
+    .warden-table tbody tr:hover { background-color: #f1f3f8; }
+    /* --- END OF NEW STYLES --- */
+
+    /* --- NEW & COMPLETE BUTTON STYLES --- */
+    .btn {
+        display: inline-block; padding: 10px 20px; font-weight: 600; font-size: 0.9rem;
+        text-align: center; text-decoration: none; color: white; border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s; border: none; cursor: pointer;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .btn-secondary { background-color: #858796; }
+    .btn-warning { background-color: #f6c23e; color: #fff; } /* Yellow */
+    /* --- END OF NEW STYLES --- */
 </style>
 
 @php
@@ -144,6 +178,7 @@
     <div class="filter-buttons">
         <button type="submit" class="btn-filter">Filter</button>
         <a href="{{ route('admin.hostels.show', $hostel->id) }}" class="btn-clear">Clear</a>
+        <button type="button" id="wardenInfoBtn" class="btn btn-warning">Warden Info</button>
     </div>
 </form>
 @forelse($roomsByFloor as $floor => $rooms)
@@ -176,4 +211,75 @@
     </div>
 @endforelse
 
+<div id="wardenModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Manage Warden Assignment</h3>
+            <span style="cursor:pointer; font-size: 28px;" id="closeWardenModal">&times;</span>
+        </div>
+        
+        <div class="current-warden">
+            <strong>Currently Assigned Warden:</strong>
+            <p style="margin-top: 5px;">{{ $hostel->warden->full_name ?? 'None' }}</p>
+        </div>
+
+        <form action="{{ route('admin.hostels.assignWarden', $hostel->id) }}" method="POST">
+            @csrf
+            @method('PATCH')
+
+            <label for="warden_id"><strong>Select a New Warden:</strong></label>
+            <div class="warden-table-container">
+                @if($availableWardens->isEmpty())
+                    <p style="text-align: center; padding: 1rem;">No other available wardens.</p>
+                @else
+                    <table class="warden-table">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Name</th>
+                                <th>NIC</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($availableWardens as $warden)
+                            <tr>
+                                <td><input type="radio" name="warden_id" value="{{ $warden->id }}" required></td>
+                                <td>{{ $warden->full_name }}</td>
+                                <td>{{ $warden->nic }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                <button type="button" id="cancelAssign" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-warning" @if($availableWardens->isEmpty()) disabled @endif>Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('wardenModal');
+    const openBtn = document.getElementById('wardenInfoBtn');
+    const closeBtn = document.getElementById('closeWardenModal');
+    const cancelBtn = document.getElementById('cancelAssign');
+
+    openBtn.onclick = function() { modal.style.display = 'block'; }
+    closeBtn.onclick = function() { modal.style.display = 'none'; }
+    cancelBtn.onclick = function() { modal.style.display = 'none'; }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+});
+</script>
+@endpush

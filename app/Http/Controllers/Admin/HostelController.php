@@ -134,7 +134,14 @@ class HostelController extends Controller
         
         $roomsByFloor = $roomsQuery->get()->groupBy('floor');
 
-        return view('admin.hostels.show', compact('hostel', 'roomsByFloor'));
+                // NEW: Get data for the warden assignment modal
+        // 1. Find all warden IDs that are already assigned to a hostel
+        $assignedWardenIds = Hostel::whereNotNull('warden_id')->pluck('warden_id');
+        // 2. Get all wardens who are NOT in that list
+        $availableWardens = Warden::whereNotIn('id', $assignedWardenIds)->get();
+
+        // MODIFIED: Pass the new data to the view
+        return view('admin.hostels.show', compact('hostel', 'roomsByFloor', 'availableWardens'));
     }
 
     /**
@@ -147,6 +154,21 @@ class HostelController extends Controller
         
         // Return a new view with the room and its students
         return view('admin.hostels.show_room', compact('room', 'students'));
+    }
+
+    /**
+     * NEW METHOD: Assign or update the warden for a specific hostel.
+     */
+    public function assignWarden(Request $request, Hostel $hostel)
+    {
+        $request->validate([
+            'warden_id' => 'required|exists:wardens,id'
+        ]);
+
+        $hostel->warden_id = $request->warden_id;
+        $hostel->save();
+
+        return redirect()->route('admin.hostels.show', $hostel->id)->with('success', 'Warden has been assigned successfully!');
     }
 
     /**
