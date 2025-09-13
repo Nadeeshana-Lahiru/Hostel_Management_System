@@ -112,6 +112,22 @@
     .btn-filter { background-color: #4e73df; }
     .btn-clear { background-color: #858796; }
 
+    /* --- NEW: Floor Header with Occupancy Counts --- */
+    .floor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        border-bottom: 2px solid #e3e6f0;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    .floor-title { font-size: 1.5rem; color: #4e73df; margin: 0; }
+    .occupancy-stats { display: flex; gap: 15px; font-size: 0.8rem; color: #858796; }
+    .stat-item { background-color: #f8f9fc; padding: 5px 8px; border-radius: 5px; }
+    .stat-item strong { color: #5a5c69; }
+    /* --- END OF NEW STYLES --- */
+
     /* --- NEW MODAL STYLES --- */
     .modal {
         display: none; position: fixed; z-index: 1000; left: 0; top: 0;
@@ -175,6 +191,17 @@
             <option value="3" {{ request('floor') == '3' ? 'selected' : '' }}>Third Floor</option>
         </select>
     </div>
+    <div class="filter-group">
+        <label for="occupied">Filter by Occupied</label>
+        <select name="occupied" id="occupied">
+            <option value="">Any</option>
+            <option value="0" {{ request('occupied') == '0' ? 'selected' : '' }}>0 Occupied (Empty)</option>
+            <option value="1" {{ request('occupied') == '1' ? 'selected' : '' }}>1 Occupied</option>
+            <option value="2" {{ request('occupied') == '2' ? 'selected' : '' }}>2 Occupied</option>
+            <option value="3" {{ request('occupied') == '3' ? 'selected' : '' }}>3 Occupied</option>
+            <option value="4" {{ request('occupied') == '4' ? 'selected' : '' }}>4 Occupied (Full)</option>
+        </select>
+    </div>
     <div class="filter-buttons">
         <button type="submit" class="btn-filter">Filter</button>
         <a href="{{ route('admin.hostels.show', $hostel->id) }}" class="btn-clear">Clear</a>
@@ -183,7 +210,14 @@
 </form>
 @forelse($roomsByFloor as $floor => $rooms)
     <div class="floor-section">
-        <h2 class="floor-title">{{ $floorNames[$floor] ?? "Floor {$floor}" }}</h2>
+        <div class="floor-header">
+            <h2 class="floor-title">{{ $floorNames[$floor] ?? "Floor {$floor}" }}</h2>
+            <div class="occupancy-stats">
+                @for ($i = 0; $i <= 4; $i++)
+                    <div class="stat-item">{{ $i }} Occupied: <strong>{{ $occupancyCountsByFloor[$floor][$i] ?? 0 }}</strong></div>
+                @endfor
+            </div>
+        </div>
         <div class="room-grid">
             @foreach($rooms as $room)
                 @php

@@ -118,9 +118,18 @@ class HostelController extends Controller
      */
     public function show(Hostel $hostel, Request $request)
     {
-        $roomsQuery = $hostel->rooms()
-                            ->withCount('students')
-                            ->orderBy('room_number');
+
+        // --- NEW: Calculate Occupancy Counts for Each Floor ---
+        // First, get all rooms for the hostel with their student counts
+        $allRoomsInHostel = $hostel->rooms()->withCount('students')->get();
+        
+        // Group rooms by floor and then count how many rooms have 0, 1, 2, 3, or 4 students
+        $occupancyCountsByFloor = $allRoomsInHostel->groupBy('floor')->map(function ($roomsOnFloor) {
+            return $roomsOnFloor->groupBy('students_count')->map->count();
+        });
+        // --- END OF NEW COUNT LOGIC ---
+
+        $roomsQuery = $hostel->rooms()->withCount('students')->orderBy('room_number');
 
         // Apply search filter for an EXACT room number
         if ($request->filled('search')) {
@@ -130,6 +139,11 @@ class HostelController extends Controller
         // Apply floor filter if present
         if ($request->filled('floor') && $request->floor !== '') {
             $roomsQuery->where('floor', $request->floor);
+        }
+
+        // NEW: Apply occupancy filter if present
+        if ($request->filled('occupied') && $request->occupied !== '') {
+            $roomsQuery->has('students', '=', $request->occupied);
         }
         
         $roomsByFloor = $roomsQuery->get()->groupBy('floor');
@@ -141,7 +155,7 @@ class HostelController extends Controller
         $availableWardens = Warden::whereNotIn('id', $assignedWardenIds)->get();
 
         // MODIFIED: Pass the new data to the view
-        return view('admin.hostels.show', compact('hostel', 'roomsByFloor', 'availableWardens'));
+        return view('admin.hostels.show', compact('hostel', 'roomsByFloor','occupancyCountsByFloor', 'availableWardens'));
     }
 
     /**
