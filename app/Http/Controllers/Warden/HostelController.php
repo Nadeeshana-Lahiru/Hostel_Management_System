@@ -49,11 +49,15 @@ class HostelController extends Controller
             return redirect()->route('warden.dashboard')->with('error', 'You are not authorized to view this hostel.');
         }
 
-        // --- NEW FILTERING LOGIC ---
-        // Start a base query for rooms in this specific hostel
-        $roomsQuery = $hostel->rooms()
-                              ->withCount('students')
-                              ->orderBy('room_number');
+        // --- NEW: Calculate Occupancy Counts for Each Floor ---
+        $allRoomsInHostel = $hostel->rooms()->withCount('students')->get();
+        $occupancyCountsByFloor = $allRoomsInHostel->groupBy('floor')->map(function ($roomsOnFloor) {
+            return $roomsOnFloor->groupBy('students_count')->map->count();
+        });
+        // --- END OF NEW COUNT LOGIC ---
+
+        // --- MODIFIED: Filtering Logic ---
+        $roomsQuery = $hostel->rooms()->withCount('students')->orderBy('room_number');
 
         // Apply search filter for an EXACT room number
         if ($request->filled('search')) {
@@ -64,12 +68,18 @@ class HostelController extends Controller
         if ($request->filled('floor') && $request->floor !== '') {
             $roomsQuery->where('floor', $request->floor);
         }
+
+        // NEW: Apply occupancy filter if present
+        if ($request->filled('occupied') && $request->occupied !== '') {
+            // has('students', '=', $request->occupied) finds rooms with an exact number of students
+            $roomsQuery->has('students', '=', $request->occupied);
+        }
         
         // Get the filtered rooms and group them by floor for display
         $roomsByFloor = $roomsQuery->get()->groupBy('floor');
         // --- END OF NEW LOGIC ---
 
-        return view('warden.hostels.show', compact('hostel', 'roomsByFloor'));
+        return view('warden.hostels.show', compact('hostel', 'roomsByFloor', 'occupancyCountsByFloor'));
     }
 
     /**

@@ -68,6 +68,15 @@
     .room-box.available { border-left: 5px solid #1cc88a; }
     .room-box.occupied { border-left: 5px solid #f6c23e; }
     .room-box.full { border-left: 5px solid #e74a3b; background-color: #f8f9fc; color: #858796; }
+
+    .floor-header {
+        display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+        border-bottom: 2px solid #e3e6f0; padding-bottom: 10px; margin-bottom: 20px;
+    }
+    .floor-title { font-size: 1.5rem; color: #4e73df; margin: 0; }
+    .occupancy-stats { display: flex; gap: 15px; font-size: 0.8rem; color: #858796; }
+    .stat-item { background-color: #f8f9fc; padding: 5px 8px; border-radius: 5px; }
+    .stat-item strong { color: #5a5c69; }
 </style>
 
 @php
@@ -87,10 +96,20 @@
         <label for="floor">Filter by Floor</label>
         <select name="floor" id="floor">
             <option value="">All Floors</option>
-            <option value="0" {{ request('floor') == '0' ? 'selected' : '' }}>Ground Floor</option>
-            <option value="1" {{ request('floor') == '1' ? 'selected' : '' }}>First Floor</option>
-            <option value="2" {{ request('floor') == '2' ? 'selected' : '' }}>Second Floor</option>
-            <option value="3" {{ request('floor') == '3' ? 'selected' : '' }}>Third Floor</option>
+            @foreach($floorNames as $floorNum => $floorName)
+                <option value="{{ $floorNum }}" {{ request('floor') == (string)$floorNum ? 'selected' : '' }}>{{ $floorName }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="occupied">Filter by Occupied</label>
+        <select name="occupied" id="occupied">
+            <option value="">Any</option>
+            <option value="0" {{ request('occupied') == '0' ? 'selected' : '' }}>0 Occupied (Empty)</option>
+            <option value="1" {{ request('occupied') == '1' ? 'selected' : '' }}>1 Occupied</option>
+            <option value="2" {{ request('occupied') == '2' ? 'selected' : '' }}>2 Occupied</option>
+            <option value="3" {{ request('occupied') == '3' ? 'selected' : '' }}>3 Occupied</option>
+            <option value="4" {{ request('occupied') == '4' ? 'selected' : '' }}>4 Occupied (Full)</option>
         </select>
     </div>
     <div class="filter-buttons">
@@ -100,7 +119,14 @@
 </form>
 @forelse($roomsByFloor as $floor => $rooms)
     <div class="floor-section">
-        <h2 class="floor-title">{{ $floorNames[$floor] ?? "Floor {$floor}" }}</h2>
+        <div class="floor-header">
+            <h2 class="floor-title">{{ $floorNames[$floor] ?? "Floor {$floor}" }}</h2>
+            <div class="occupancy-stats">
+                @for ($i = 0; $i <= 4; $i++)
+                    <div class="stat-item">{{ $i }} Occupied: <strong>{{ $occupancyCountsByFloor[$floor][$i] ?? 0 }}</strong></div>
+                @endfor
+            </div>
+        </div>
         <div class="room-grid">
             @foreach($rooms as $room)
                 @php
