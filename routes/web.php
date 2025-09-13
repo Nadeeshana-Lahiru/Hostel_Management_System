@@ -33,6 +33,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('room-allocation/{hostel}', [\App\Http\Controllers\Admin\RoomAllocationController::class, 'showHostelRooms'])->name('allocations.showHostelRooms');
     Route::get('room-allocation/room/{room}', [\App\Http\Controllers\Admin\RoomAllocationController::class, 'showAllocationForm'])->name('allocations.showAllocationForm');
     Route::post('room-allocation/room/{room}', [\App\Http\Controllers\Admin\RoomAllocationController::class, 'assignStudent'])->name('allocations.assignStudent');
+    Route::patch('allocations/reassign/{student}', [\App\Http\Controllers\Admin\RoomAllocationController::class, 'reassignStudent'])->name('allocations.reassignStudent');
+
+    // ...WITH THIS NEW ONE for the final confirmation step.
+    Route::post('allocations/reassign-confirm/{student}/{new_room}', [\App\Http\Controllers\Admin\RoomAllocationController::class, 'confirmReassign'])->name('allocations.confirmReassign');
 
     // Routes for Complaint Management
     Route::get('complaints', [\App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('complaints.index');
