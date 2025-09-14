@@ -113,10 +113,31 @@
                 <div class="form-group full-width"><label for="address">Address</label><input type="text" name="address" value="{{ old('address') }}" required></div>
                 <div class="form-group"><label for="telephone_number">Telephone</label><input type="text" name="telephone_number" value="{{ old('telephone_number') }}" required></div>
                 <div class="form-group"><label for="nationality">Nationality</label><input type="text" name="nationality" value="{{ old('nationality', 'Sri Lankan') }}"></div>
-                <div class="form-group"><label for="religion">Religion</label><input type="text" name="religion" value="{{ old('religion') }}"></div>
+                <div class="form-group">
+                    <label for="religion">Religion</label>
+                    <select name="religion" id="religion">
+                        <option value="">Select...</option>
+                        <option value="Buddhism" {{ old('religion') == 'Buddhism' ? 'selected' : '' }}>Buddhism</option>
+                        <option value="Hinduism" {{ old('religion') == 'Hinduism' ? 'selected' : '' }}>Hinduism</option>
+                        <option value="Islam" {{ old('religion') == 'Islam' ? 'selected' : '' }}>Islam</option>
+                        <option value="Christianity" {{ old('religion') == 'Christianity' ? 'selected' : '' }}>Christianity</option>
+                        <option value="Other" {{ old('religion') == 'Other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                </div>
                 <div class="form-group"><label for="civil_status">Civil Status</label><select name="civil_status"><option value="unmarried">Unmarried</option><option value="married">Married</option></select></div>
-                <div class="form-group"><label for="district">District</label><input type="text" name="district" value="{{ old('district') }}"></div>
-                <div class="form-group"><label for="province">Province</label><input type="text" name="province" value="{{ old('province') }}"></div>
+                <div class="form-group">
+                    <label for="province">Province</label>
+                    <select name="province" id="province-select">
+                        <option value="">Select Province...</option>
+                        {{-- Options will be added by JavaScript --}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="district">District</label>
+                    <select name="district" id="district-select" disabled>
+                        <option value="">Select Province First</option>
+                    </select>
+                </div>
                 <div class="form-group"><label for="gn_division">GN Division</label><input type="text" name="gn_division" value="{{ old('gn_division') }}"></div>
             </div>
         </fieldset>
@@ -158,3 +179,58 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Data for Provinces and Districts of Sri Lanka
+    const locationData = {
+        "Western": ["Colombo", "Gampaha", "Kalutara"],
+        "Central": ["Kandy", "Matale", "Nuwara Eliya"],
+        "Southern": ["Galle", "Matara", "Hambantota"],
+        "Northern": ["Jaffna", "Kilinochchi", "Mannar", "Mullaitivu", "Vavuniya"],
+        "Eastern": ["Trincomalee", "Batticaloa", "Ampara"],
+        "North Western": ["Kurunegala", "Puttalam"],
+        "North Central": ["Anuradhapura", "Polonnaruwa"],
+        "Uva": ["Badulla", "Monaragala"],
+        "Sabaragamuwa": ["Ratnapura", "Kegalle"]
+    };
+
+    const provinceSelect = document.getElementById('province-select');
+    const districtSelect = document.getElementById('district-select');
+
+    // Populate the Province dropdown
+    for (const province in locationData) {
+        const option = document.createElement('option');
+        option.value = province;
+        option.textContent = province;
+        provinceSelect.appendChild(option);
+    }
+
+    // Add event listener to the Province dropdown
+    provinceSelect.addEventListener('change', function () {
+        const selectedProvince = this.value;
+        
+        // Clear previous district options
+        districtSelect.innerHTML = '<option value="">Select District...</option>';
+        
+        if (selectedProvince && locationData[selectedProvince]) {
+            // Enable the district dropdown
+            districtSelect.disabled = false;
+            
+            // Populate the District dropdown
+            locationData[selectedProvince].forEach(function (district) {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        } else {
+            // Disable if no province is selected
+            districtSelect.disabled = true;
+            districtSelect.innerHTML = '<option value="">Select Province First</option>';
+        }
+    });
+});
+</script>
+@endpush
