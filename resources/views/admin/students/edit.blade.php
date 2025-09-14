@@ -146,10 +146,31 @@
                 <div class="form-group full-width"><label for="address">Address</label><input type="text" name="address" value="{{ old('address', $student->address) }}" required></div>
                 <div class="form-group"><label for="telephone_number">Telephone</label><input type="text" name="telephone_number" value="{{ old('telephone_number', $student->telephone_number) }}" required></div>
                 <div class="form-group"><label for="nationality">Nationality</label><input type="text" name="nationality" value="{{ old('nationality', $student->nationality) }}"></div>
-                <div class="form-group"><label for="religion">Religion</label><input type="text" name="religion" value="{{ old('religion', $student->religion) }}"></div>
+                <div class="form-group">
+                    <label for="religion">Religion</label>
+                    <select name="religion" id="religion">
+                        <option value="">Select...</option>
+                        <option value="Buddhism" {{ old('religion', $student->religion) == 'Buddhism' ? 'selected' : '' }}>Buddhism</option>
+                        <option value="Hinduism" {{ old('religion', $student->religion) == 'Hinduism' ? 'selected' : '' }}>Hinduism</option>
+                        <option value="Islam" {{ old('religion', $student->religion) == 'Islam' ? 'selected' : '' }}>Islam</option>
+                        <option value="Christianity" {{ old('religion', $student->religion) == 'Christianity' ? 'selected' : '' }}>Christianity</option>
+                        <option value="Other" {{ old('religion', $student->religion) == 'Other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                </div>
                 <div class="form-group"><label for="civil_status">Civil Status</label><select name="civil_status"><option value="unmarried" {{ old('civil_status', $student->civil_status) == 'unmarried' ? 'selected' : '' }}>Unmarried</option><option value="married" {{ old('civil_status', $student->civil_status) == 'married' ? 'selected' : '' }}>Married</option></select></div>
-                <div class="form-group"><label for="district">District</label><input type="text" name="district" value="{{ old('district', $student->district) }}"></div>
-                <div class="form-group"><label for="province">Province</label><input type="text" name="province" value="{{ old('province', $student->province) }}"></div>
+                <div class="form-group">
+                    <label for="province">Province</label>
+                    <select name="province" id="province-select">
+                        <option value="">Select Province...</option>
+                        {{-- Options will be added by JavaScript --}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="district">District</label>
+                    <select name="district" id="district-select">
+                        <option value="">Select Province First</option>
+                    </select>
+                </div>
                 <div class="form-group"><label for="gn_division">GN Division</label><input type="text" name="gn_division" value="{{ old('gn_division', $student->gn_division) }}"></div>
             </div>
         </fieldset>
@@ -194,3 +215,69 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const locationData = {
+        "Western": ["Colombo", "Gampaha", "Kalutara"],
+        "Central": ["Kandy", "Matale", "Nuwara Eliya"],
+        "Southern": ["Galle", "Matara", "Hambantota"],
+        "Northern": ["Jaffna", "Kilinochchi", "Mannar", "Mullaitivu", "Vavuniya"],
+        "Eastern": ["Trincomalee", "Batticaloa", "Ampara"],
+        "North Western": ["Kurunegala", "Puttalam"],
+        "North Central": ["Anuradhapura", "Polonnaruwa"],
+        "Uva": ["Badulla", "Monaragala"],
+        "Sabaragamuwa": ["Ratnapura", "Kegalle"]
+    };
+
+    const provinceSelect = document.getElementById('province-select');
+    const districtSelect = document.getElementById('district-select');
+
+    // Get the student's saved data from Blade
+    const savedProvince = "{{ old('province', $student->province) }}";
+    const savedDistrict = "{{ old('district', $student->district) }}";
+
+    // Populate the Province dropdown
+    for (const province in locationData) {
+        const option = document.createElement('option');
+        option.value = province;
+        option.textContent = province;
+        // If this province matches the student's saved province, select it
+        if (province === savedProvince) {
+            option.selected = true;
+        }
+        provinceSelect.appendChild(option);
+    }
+
+    // Function to update districts based on province
+    function updateDistricts() {
+        const selectedProvince = provinceSelect.value;
+        districtSelect.innerHTML = '<option value="">Select District...</option>';
+        
+        if (selectedProvince && locationData[selectedProvince]) {
+            districtSelect.disabled = false;
+            locationData[selectedProvince].forEach(function (district) {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                // If this district matches the student's saved district, select it
+                if (district === savedDistrict) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+        } else {
+            districtSelect.disabled = true;
+            districtSelect.innerHTML = '<option value="">Select Province First</option>';
+        }
+    }
+
+    // Run the function once on page load to set the initial state
+    updateDistricts();
+
+    // Add event listener for any future changes
+    provinceSelect.addEventListener('change', updateDistricts);
+});
+</script>
+@endpush

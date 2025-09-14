@@ -102,6 +102,19 @@
         color: #858796;
         font-weight: 500;
     }
+
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 5px;
+        border: 1px solid transparent;
+        font-weight: 500;
+    }
+    .alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border-color: #a7f3d0;
+    }
 </style>
 
 <form action="{{ route('admin.students.index') }}" method="GET" class="filter-form">
@@ -156,6 +169,12 @@
     <h2>Student List</h2>
     <a href="{{ route('admin.students.create') }}" class="btn btn-primary" style="padding: 10px 15px; border-radius: 5px; text-decoration: none; color: white; background-color: #007bff;">Add New Student</a>
 </div>
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
 <div class="table-container">
     <table>

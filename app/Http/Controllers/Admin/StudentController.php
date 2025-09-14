@@ -191,13 +191,34 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
+        // UPDATED: Added all validation rules
         $validatedData = $request->validate([
             'initial_name' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
-            // Make sure email is unique but ignore the student's own user record
-            'email' => ['required', 'email', Rule::unique('users')->ignore($student->user_id)],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->user_id)],
             'dob' => 'required|date',
-            // ... add all other validation rules from your 'store' method
+            'gender' => 'required|in:male,female',
+            'telephone_number' => 'required|string|max:15',
+            'address' => 'required|string',
+            'faculty' => 'required|string',
+            'batch' => 'required|string',
+            'year' => 'required|integer',
+            'guardian_name' => 'required|string',
+            'guardian_mobile' => 'required|string|max:15',
+            'guardian_relationship' => 'required|string',
+            'emergency_contact_name' => 'required|string',
+            'emergency_contact_number' => 'required|string|max:15',
+            // NEW: Added validation for dropdowns
+            'nationality' => 'nullable|string',
+            'religion' => 'nullable|string',
+            'civil_status' => 'nullable|string',
+            'district' => 'nullable|string',
+            'province' => 'nullable|string',
+            'gn_division' => 'nullable|string',
+            'department' => 'nullable|string',
+            'course' => 'nullable|string',
+            'guardian_dob' => 'nullable|date',
+            'medical_info' => 'nullable|string',
         ]);
 
         DB::beginTransaction();

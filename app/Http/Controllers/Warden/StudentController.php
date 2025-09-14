@@ -128,8 +128,32 @@ class StudentController extends WardenBaseController // Extends the base control
         }
         // Validation is the same as admin's, ensuring unique emails/nic except for the current user
         $validatedData = $request->validate([
-            'email' => ['required', 'email', Rule::unique('users')->ignore($student->user_id)],
-            // ... other validation rules
+            'initial_name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($student->user_id)],
+            'dob' => 'required|date',
+            'gender' => 'required|in:male,female',
+            'telephone_number' => 'required|string|max:15',
+            'address' => 'required|string',
+            'faculty' => 'required|string',
+            'batch' => 'required|string',
+            'year' => 'required|integer',
+            'guardian_name' => 'required|string',
+            'guardian_mobile' => 'required|string|max:15',
+            'guardian_relationship' => 'required|string',
+            'emergency_contact_name' => 'required|string',
+            'emergency_contact_number' => 'required|string|max:15',
+            // NEW: Added validation for dropdowns
+            'nationality' => 'nullable|string',
+            'religion' => 'nullable|string',
+            'civil_status' => 'nullable|string',
+            'district' => 'nullable|string',
+            'province' => 'nullable|string',
+            'gn_division' => 'nullable|string',
+            'department' => 'nullable|string',
+            'course' => 'nullable|string',
+            'guardian_dob' => 'nullable|date',
+            'medical_info' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
