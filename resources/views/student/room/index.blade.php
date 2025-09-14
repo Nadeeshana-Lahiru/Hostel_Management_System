@@ -49,11 +49,21 @@
     }
 </style>
 
+@php
+    // This array translates the floor number from the database (0, 1, etc.) into a readable name.
+    $floorNames = [
+        0 => 'Ground Floor',
+        1 => 'First Floor',
+        2 => 'Second Floor',
+        3 => 'Third Floor'
+    ];
+@endphp
+
 @if(!$room)
     <h4>You have not been assigned to a room yet.</h4>
 @else
     <div class="page-header">
-        <h2>Your Room | Number {{ $room->room_number }}</h2>
+        <h2>Your Room | Number {{ $room->room_number }} in {{ $floorNames[(int)$room->floor] ?? 'N/A' }}</h2>
     </div>
     <div class="table-container">
         <table>
