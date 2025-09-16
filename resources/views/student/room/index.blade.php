@@ -99,6 +99,24 @@
     .room-box.available { border-left: 5px solid #1cc88a; } /* Green */
     .room-box.occupied { border-left: 5px solid #f6c23e; } /* Yellow */
     .room-box.full { border-left: 5px solid #e74a3b; /* Red */ background-color: #f8f9fc; color: #858796; }
+
+    .modal {
+        display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+        width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        background-color: #fefefe; margin: 15% auto; padding: 25px; border: none;
+        width: 90%; max-width: 500px; border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #e3e6f0; }
+    .modal-header h3 { margin: 0; }
+    .close-button { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .modal-occupants-list { list-style-type: none; padding: 0; }
+    .modal-occupant-item { display: flex; align-items: center; gap: 15px; padding: 1rem; border-bottom: 1px solid #e3e6f0; }
+    .modal-occupant-item:last-child { border-bottom: none; }
 </style>
 
 @php
@@ -198,10 +216,12 @@
                     <h3 class="floor-title">{{ $floorNames[$floor] ?? "Floor {$floor}" }}</h3>
                     <div class="room-grid">
                         @foreach($rooms as $room)
-                            <div class="room-box">
+                            <button type="button" class="room-box view-occupants-btn"
+                                    data-room-number="{{ $room->room_number }}"
+                                    data-occupants="{{ $room->students->toJson() }}">
                                 <span class="room-number">Room {{ $room->room_number }}</span>
                                 <span class="room-availability">{{ $room->students_count }} / {{ $room->capacity }} Occupied</span>
-                            </div>
+                            </button>
                         @endforeach
                     </div>
                 </div>
@@ -209,4 +229,69 @@
         @endif
     </div>
 @endif
+
+<div id="occupantsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="occupantsModalTitle">Room Occupants</h3>
+            <span class="close-button">&times;</span>
+        </div>
+        <ul id="occupantsModalList" class="modal-occupants-list">
+            </ul>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('occupantsModal');
+    const modalTitle = document.getElementById('occupantsModalTitle');
+    const modalList = document.getElementById('occupantsModalList');
+    const openBtns = document.querySelectorAll('.view-occupants-btn');
+    const closeBtn = document.querySelector('#occupantsModal .close-button');
+
+    openBtns.forEach(button => {
+        button.addEventListener('click', function() {
+            const roomNumber = this.dataset.roomNumber;
+            const occupants = JSON.parse(this.dataset.occupants);
+
+            // Update modal title
+            modalTitle.innerText = `Occupants of Room ${roomNumber}`;
+
+            // Clear previous list
+            modalList.innerHTML = '';
+
+            // Populate list with occupants
+            if (occupants.length > 0) {
+                occupants.forEach(student => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'modal-occupant-item';
+                    listItem.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#858796" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <div>
+                            <strong>${student.full_name}</strong><br>
+                            <span>${student.reg_no}</span>
+                        </div>
+                    `;
+                    modalList.appendChild(listItem);
+                });
+            } else {
+                modalList.innerHTML = '<p>This room is currently empty.</p>';
+            }
+            
+            // Show the modal
+            modal.style.display = 'block';
+        });
+    });
+
+    // Close modal logic
+    closeBtn.onclick = function() { modal.style.display = 'none'; }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+});
+</script>
+@endpush

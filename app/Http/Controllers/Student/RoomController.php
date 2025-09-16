@@ -50,7 +50,7 @@ class RoomController extends StudentBaseController
             $matchingRoomIds = $query->pluck('room_id')->unique();
 
             // Fetch the actual Room models to display the results
-            $foundRooms = Room::whereIn('id', $matchingRoomIds)->withCount('students')->get()->groupBy('floor');
+            $foundRooms = Room::whereIn('id', $matchingRoomIds)->withCount('students')->with('students')->get()->groupBy('floor');
         }
 
         // --- Data for the Filter Dropdowns ---
