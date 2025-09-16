@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hostel Management System - Login</title>
+<!DOCTYPE html
+><html>
+    <head><title>Reset Password</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -122,57 +119,21 @@
     </style>
 </head>
 <body>
-    <h1 class="main-title">Login to Your Hostel</h1>
+    <div class="container" style="max-width: 450px;">
+        <h2>Enter New Password</h2>
+        <p>An OTP has been sent. Please enter it below along with your new password.</p>
 
-    @if(session('error'))
-        <div class="error-message" style="max-width: 1160px; width: 100%; box-sizing: border-box;">{{ session('error') }}</div>
-    @endif
-
-    <div class="login-container">
-        <div class="login-card admin-theme">
-            <div class="card-header">
-                <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4e73df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
-                <h3>Admin Login</h3>
-            </div>
-            <form action="{{ route('login.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="user_type" value="admin">
-                <div class="form-group"><label>Username (Email)</label><input type="text" name="username" required></div>
-                <div class="form-group"><label>Password</label><input type="password" name="password" required></div>
-                <button type="submit" class="btn-login">Login as Admin</button>
-                <div class="forgot-password"><a href="{{ route('password.request') }}">Forgot Password?</a></div>
-            </form>
-        </div>
-
-        <div class="login-card warden-theme">
-            <div class="card-header">
-                <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6610f2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
-                <h3>Warden Login</h3>
-            </div>
-            <form action="{{ route('login.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="user_type" value="warden">
-                <div class="form-group"><label>Username (Email)</label><input type="text" name="username" required></div>
-                <div class="form-group"><label>Password</label><input type="password" name="password" required></div>
-                <button type="submit" class="btn-login">Login as Warden</button>
-                <div class="forgot-password"><a href="{{ route('password.request') }}">Forgot Password?</a></div>
-            </form>
-        </div>
-
-        <div class="login-card student-theme">
-            <div class="card-header">
-                <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1cc88a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
-                <h3>Student Login</h3>
-            </div>
-            <form action="{{ route('login.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="user_type" value="student">
-                <div class="form-group"><label>Username (Reg No)</label><input type="text" name="username" required></div>
-                <div class="form-group"><label>Password</label><input type="password" name="password" required></div>
-                <button type="submit" class="btn-login">Login as Student</button>
-                <div class="forgot-password"><a href="{{ route('password.request') }}">Forgot Password?</a></div>
-            </form>
-        </div>
+        @if(session('error')) <div class="error-message">{{ session('error') }}</div> @endif
+        
+        <form method="POST" action="{{ route('password.update') }}">
+            @csrf
+            <input type="hidden" name="email" value="{{ $email }}">
+            
+            <div class="form-group"><label for="otp">6-Digit OTP</label><input id="otp" type="text" name="otp" required></div>
+            <div class="form-group"><label for="password">New Password</label><input id="password" type="password" name="password" required></div>
+            <div class="form-group"><label for="password-confirm">Confirm New Password</label><input id="password-confirm" type="password" name="password_confirmation" required></div>
+            
+            <button type="submit" class="btn-login">Change Password</button>
+        </form>
     </div>
-</body>
-</html>
+</body></html>

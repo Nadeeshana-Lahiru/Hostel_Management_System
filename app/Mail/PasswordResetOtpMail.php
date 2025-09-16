@@ -13,20 +13,14 @@ class PasswordResetOtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $otp;
+
     /**
      * Create a new message instance.
      */
-    public $otp;
-
     public function __construct($otp)
     {
         $this->otp = $otp;
-    }
-
-    public function build()
-    {
-        return $this->subject('Your Password Reset OTP')
-                    ->view('emails.otp_email');
     }
 
     /**
@@ -35,7 +29,7 @@ class PasswordResetOtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Password Reset Otp Mail',
+            subject: 'Your Password Reset OTP',
         );
     }
 
@@ -44,8 +38,9 @@ class PasswordResetOtpMail extends Mailable
      */
     public function content(): Content
     {
+        // This is the corrected line. It now points to the correct view file.
         return new Content(
-            view: 'view.name',
+            view: 'emails.otp_email',
         );
     }
 
