@@ -291,6 +291,11 @@ document.addEventListener('DOMContentLoaded', function () {
             showStep(stepPassword);
         }).catch(err => showMessage('error', err.message || 'An error occurred.'));
     });
+
+    finalOkBtn.addEventListener('click', function() {
+        // The controller flashed the success message, so a simple reload will show it.
+        window.location.reload();
+    });
 });
 </script>
 

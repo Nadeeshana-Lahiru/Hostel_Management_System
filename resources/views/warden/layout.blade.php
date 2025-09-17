@@ -55,12 +55,6 @@
                 <div class="header-left">
                     @yield('page-title')
                 </div>
-                <!-- <div class="header-right">
-                    <form action="{{ route('logout') }}" method="POST" class="logout-form">
-                        @csrf
-                        <button type="submit">Logout</button>
-                    </form>
-                </div> -->
             </header>
             
             <main class="main-content">
