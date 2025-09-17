@@ -9,90 +9,92 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rules\Password;
 
 class ForgotPasswordController extends Controller
 {
-    // Step 1: Show the form where the user enters their email
-    public function showLinkRequestForm()
-    {
-        return view('auth.passwords.email');
-    }
-
-    // Step 2: Validate email, generate OTP, and send it
+    /**
+     * Handles the AJAX request to send an OTP.
+     */
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate(['email' => 'required|email']);
         $user = User::where('email', $request->email)->first();
 
-        // Check if the email exists in the database
         if (!$user) {
-            return redirect()->back()->with('error', 'Email is Wrong.');
+            return response()->json(['message' => 'Your Email Address is Wrong.'], 422);
         }
 
-        // Generate a 6-digit OTP
         $otp = rand(100000, 999999);
-
-        // Delete any old tokens for this email
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
-
-        // Save the new OTP in the database (it's hashed for security)
         DB::table('password_reset_tokens')->insert([
             'email' => $request->email,
             'token' => Hash::make($otp),
             'created_at' => now(),
         ]);
 
-        // Send the OTP to the user's real email address
         try {
             Mail::to($user->email)->send(new PasswordResetOtpMail($otp));
+            Session::put('otp_email', $user->email);
+            return response()->json(['message' => 'An OTP has been sent to your email.']);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Could not send OTP email. Please check your mail configuration.');
+            return response()->json(['message' => 'Could not send OTP email. Please check configuration.'], 500);
         }
-
-        // Redirect to the form where they can enter the OTP
-        return redirect()->route('password.reset')->with('email', $request->email);
     }
 
-    // Step 3: Show the form to enter OTP and new password
-    public function showResetForm(Request $request)
-    {
-        // We get the email from the previous step to pre-fill the form
-        $email = session('email', old('email'));
-        return view('auth.passwords.reset', ['email' => $email]);
-    }
-
-    // Step 4: Verify OTP and update the password
-    public function reset(Request $request)
+    /**
+     * Handles the AJAX request to verify the OTP.
+     */
+    public function verifyOtp(Request $request)
     {
         $request->validate([
+            'otp' => 'required|numeric|digits:6',
             'email' => 'required|email',
-            'otp' => 'required|numeric',
-            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Find the most recent OTP request for this email
-        $tokenData = DB::table('password_reset_tokens')
-            ->where('email', $request->email)->latest()->first();
+        $tokenData = DB::table('password_reset_tokens')->where('email', $request->email)->latest()->first();
 
-        // Check if a token exists and hasn't expired (default is 60 mins)
-        if (!$tokenData || now()->subMinutes(60)->gt($tokenData->created_at)) {
-            return redirect()->back()->with('error', 'Invalid or expired OTP.');
+        if (!$tokenData || now()->subMinutes(5)->gt($tokenData->created_at)) {
+            return response()->json(['message' => 'OTP was expired, Resend the OTP.'], 422);
         }
 
-        // Securely check if the entered OTP matches the hashed one in the database
         if (!Hash::check($request->otp, $tokenData->token)) {
-            return redirect()->back()->with('error', 'OTP is not correct.');
+            return response()->json(['message' => 'OTP is not correct.'], 422);
         }
 
-        // OTP is correct, find the user and update their password
-        $user = User::where('email', $request->email)->first();
-        $user->password = Hash::make($request->password);
-        $user->save();
+        Session::put('otp_verified', true);
+        return response()->json(['message' => 'OTP verified successfully.']);
+    }
 
-        // Delete the used token
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+    /**
+     * Handles the final password update.
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols()
+            ],
+        ], ['password.min' => 'Password need to be minimum 8 characters.']);
 
-        // Redirect to the login page with a success message
-        return redirect()->route('login.form')->with('success', 'Your password has been changed successfully!');
+        if (!Session::get('otp_verified', false) || !Session::has('otp_email')) {
+            return redirect()->route('login.form')->with('error', 'Authentication failed. Please start over.');
+        }
+
+        $user = User::where('email', Session::get('otp_email'))->first();
+        if ($user) {
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            DB::table('password_reset_tokens')->where('email', Session::get('otp_email'))->delete();
+            Session::forget(['otp_email', 'otp_verified']);
+
+            return redirect()->route('login.form')->with('success', 'You have successfully reset the password. Now log in with your new password.');
+        }
+
+        return redirect()->route('login.form')->with('error', 'An unexpected error occurred.');
     }
 }
