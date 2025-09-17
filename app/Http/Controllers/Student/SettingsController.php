@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Student;
 
-use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetOtpMail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rules\Password;
 
 class SettingsController extends StudentBaseController
 {
@@ -17,59 +19,88 @@ class SettingsController extends StudentBaseController
         return view('student.settings.index');
     }
 
+    /**
+     * Handles the AJAX request to send an OTP.
+     */
     public function sendOtp(Request $request)
     {
         $request->validate(['email' => 'required|email']);
-        $user = User::where('email', $request->email)->where('id', auth()->id())->first(); // Security check
+        // Security check: Ensures students can only request for their own logged-in account
+        $user = User::where('email', $request->email)->where('id', Auth::id())->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Email does not match your account.'], 404);
+            return response()->json(['message' => 'Your Email Address is Wrong.'], 422);
         }
 
         $otp = rand(100000, 999999);
-        Session::put('otp', $otp);
-        Session::put('otp_email', $user->email);
-        Session::put('otp_expires_at', now()->addMinutes(10));
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => Hash::make($otp),
+            'created_at' => now(),
+        ]);
 
         try {
             Mail::to($user->email)->send(new PasswordResetOtpMail($otp));
-            return response()->json(['message' => 'OTP sent successfully to your email.']);
+            Session::put('otp_email_settings', $user->email);
+            return response()->json(['message' => 'An OTP has been sent to your email.']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Could not send OTP email. Please check configuration.'], 500);
         }
     }
 
+    /**
+     * Handles the AJAX request to verify the OTP.
+     */
     public function verifyOtp(Request $request)
     {
-        $request->validate(['otp' => 'required|numeric']);
+        $request->validate([
+            'otp' => 'required|numeric|digits:6',
+            'email' => 'required|email',
+        ]);
 
-        if (!Session::has('otp') || Session::get('otp') != $request->otp || now()->gt(Session::get('otp_expires_at'))) {
-            return response()->json(['message' => 'OTP is not Match or has expired.'], 400);
+        $tokenData = DB::table('password_reset_tokens')->where('email', $request->email)->latest()->first();
+
+        if (!$tokenData || now()->subMinutes(5)->gt($tokenData->created_at)) {
+            return response()->json(['message' => 'OTP was expired, Resend the OTP.'], 422);
         }
-        
-        Session::put('otp_verified', true);
+
+        if (!Hash::check($request->otp, $tokenData->token)) {
+            return response()->json(['message' => 'OTP is not correct.'], 422);
+        }
+
+        Session::put('otp_verified_settings', true);
         return response()->json(['message' => 'OTP verified successfully.']);
     }
 
+    /**
+     * Handles the final password update via AJAX.
+     */
     public function changePassword(Request $request)
     {
-        $request->validate(['password' => 'required|string|min:8|confirmed']);
+        $request->validate([
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols()
+            ],
+        ], [
+            'password.min' => 'Password need to be minimum 8 characters.',
+            'password.confirmed' => 'Passwords are not match.'
+        ]);
 
-        if (!Session::get('otp_verified', false)) {
-            return redirect()->route('student.settings.index')->with('error', 'Please verify OTP first.');
+        if (!Session::get('otp_verified_settings', false) || Session::get('otp_email_settings') !== Auth::user()->email) {
+            return response()->json(['message' => 'Authentication failed. Please start over.'], 403);
         }
 
-        $user = User::where('email', Session::get('otp_email'))->first();
-        if ($user) {
-            $user->password = Hash::make($request->password);
-            $user->save();
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
 
-            Session::forget(['otp', 'otp_email', 'otp_expires_at', 'otp_verified']);
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+        Session::forget(['otp_email_settings', 'otp_verified_settings']);
 
-            // Redirect to student settings page
-            return redirect()->route('student.settings.index')->with('success', 'Your password has been changed successfully!');
-        }
-        
-        return redirect()->route('student.settings.index')->with('error', 'An unexpected error occurred.');
+        Session::flash('success', 'You have successfully changed your password.');
+        return response()->json(['message' => 'Password changed successfully!']);
     }
 }
