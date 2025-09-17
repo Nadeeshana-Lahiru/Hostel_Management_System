@@ -68,7 +68,7 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Handles the final password update.
+     * Handles the final password update via AJAX.
      */
     public function resetPassword(Request $request)
     {
@@ -78,10 +78,13 @@ class ForgotPasswordController extends Controller
                 'confirmed',
                 Password::min(8)->mixedCase()->numbers()->symbols()
             ],
-        ], ['password.min' => 'Password need to be minimum 8 characters.']);
+        ], [
+            'password.min' => 'Password need to be minimum 8 characters.',
+            'password.confirmed' => 'Passwords are not match.'
+        ]);
 
         if (!Session::get('otp_verified', false) || !Session::has('otp_email')) {
-            return redirect()->route('login.form')->with('error', 'Authentication failed. Please start over.');
+            return response()->json(['message' => 'Authentication failed. Please start over.'], 403);
         }
 
         $user = User::where('email', Session::get('otp_email'))->first();
@@ -92,9 +95,13 @@ class ForgotPasswordController extends Controller
             DB::table('password_reset_tokens')->where('email', Session::get('otp_email'))->delete();
             Session::forget(['otp_email', 'otp_verified']);
 
-            return redirect()->route('login.form')->with('success', 'You have successfully reset the password. Now log in with your new password.');
+            // Flash the success message for when the page reloads
+            Session::flash('success', 'You have successfully reset the password. Now log in with your new password.');
+            
+            // Return a JSON response to the modal
+            return response()->json(['message' => 'Password reset was successful!']);
         }
 
-        return redirect()->route('login.form')->with('error', 'An unexpected error occurred.');
+        return response()->json(['message' => 'An unexpected error occurred.'], 500);
     }
 }

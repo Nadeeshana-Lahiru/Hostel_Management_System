@@ -146,10 +146,7 @@
 
    <div id="forgotPasswordModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Reset Password</h3>
-                <span class="close-button">&times;</span>
-            </div>
+            <div class="modal-header"><h3 id="modalTitle">Reset Password</h3><span class="close-button">&times;</span></div>
             
             <div id="step-email" class="modal-step active">
                 <p>Enter your account email to receive a verification OTP.</p>
@@ -165,13 +162,13 @@
                     <input type="hidden" name="email">
                     <div class="form-group"><label>6-Digit OTP</label><input type="text" name="otp" required></div>
                     <div class="modal-buttons"><button type="button" class="btn btn-secondary close-button">Cancel</button><button type="submit" class="btn btn-primary">Confirm OTP</button></div>
-                    <div style="text-align: center; margin-top: 1rem;"><a href="#" id="resend-otp">Resend OTP</a></div>
+                    <div class="resend-container"><a href="#" id="resend-otp">Resend OTP</a></div>
                 </form>
             </div>
 
             <div id="step-password" class="modal-step">
-                <p>OTP verified! You can now set a new, strong password.</p>
-                <form id="resetPasswordForm" action="{{ route('password.update') }}" method="POST">
+                <p>OTP verified! Set a new, strong password.</p>
+                <form id="resetPasswordForm">
                     @csrf
                     <div class="form-group password-group">
                         <label>New Password</label>
@@ -187,6 +184,14 @@
                 </form>
             </div>
             
+            <div id="step-success" class="modal-step">
+                <h3 style="color: #1cc88a;">Success!</h3>
+                <p>You have successfully reset the password. Now log in with your new password.</p>
+                <div class="modal-buttons" style="justify-content: center;">
+                    <button type="button" class="btn btn-primary close-button" style="flex-grow: 0;">OK</button>
+                </div>
+            </div>
+            
             <div id="modal-message"></div>
         </div>
     </div>
@@ -197,15 +202,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const openBtns = document.querySelectorAll('.forgot-password-btn');
     const closeBtns = document.querySelectorAll('.close-button');
     const messageDiv = document.getElementById('modal-message');
-
     const stepEmail = document.getElementById('step-email');
     const stepOtp = document.getElementById('step-otp');
     const stepPassword = document.getElementById('step-password');
-    
+    const stepSuccess = document.getElementById('step-success');
     const sendOtpForm = document.getElementById('sendOtpForm');
     const verifyOtpForm = document.getElementById('verifyOtpForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
     const resendOtpBtn = document.getElementById('resend-otp');
-
     let currentEmail = '';
     let timer;
 
@@ -292,9 +296,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }).catch(err => showMessage('error', err.message || 'An error occurred.'));
     });
 
-    finalOkBtn.addEventListener('click', function() {
-        // The controller flashed the success message, so a simple reload will show it.
-        window.location.reload();
+    resetPasswordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        showMessage('success', 'Processing...');
+        fetch('{{ route("password.update") }}', {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('#resetPasswordForm [name=_token]').value }
+        }).then(res => {
+            if (!res.ok) return res.json().then(err => Promise.reject(err));
+            return res.json();
+        }).then(data => {
+            showStep(stepSuccess); // On success, show the new success step
+        }).catch(err => {
+            const errorText = err.errors ? err.errors.password[0] : (err.message || 'An error occurred.');
+            showMessage('error', errorText);
+        });
+    });
+
+    // When the "OK" button on the success step is clicked, just close the modal.
+    document.querySelector('#step-success .close-button').addEventListener('click', function() {
+        hideModal();
+        window.location.reload(); // Reload the login page to show the flashed success message
     });
 });
 </script>
