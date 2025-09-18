@@ -17,7 +17,7 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        // Get the logged-in user and their admin profile data
+ 
         $user = Auth::user();
         $admin = $user->admin; // This uses the new relationship
         return view('admin.settings.index', compact('admin'));

@@ -18,18 +18,18 @@ Route::post('reset-password', [\App\Http\Controllers\Auth\ForgotPasswordControll
 Route::prefix('admin')->name('admin.')->group(function () {
     // This is where all your admin-panel routes will go
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    // Add other admin routes for wardens, students etc. here later
+    //admin routes for wardens, students etc. here later
 
-    // Add this line for Warden Management
+    //  this line for Warden Management
     Route::resource('wardens', \App\Http\Controllers\Admin\WardenController::class);
 
-    // Add this line for Hostel Management
+    //  this line for Hostel Management
     Route::resource('hostels', \App\Http\Controllers\Admin\HostelController::class);
     Route::get('hostels/room/{room}', [\App\Http\Controllers\Admin\HostelController::class, 'showRoomDetails'])->name('hostels.showRoomDetails');
-    // ADD THIS NEW ROUTE for assigning a warden
+    //  THIS NEW ROUTE for assigning a warden
     Route::patch('hostels/{hostel}/assign-warden', [\App\Http\Controllers\Admin\HostelController::class, 'assignWarden'])->name('hostels.assignWarden');
 
-    // Add this line for Student Management
+    //  this line for Student Management
     Route::resource('students', \App\Http\Controllers\Admin\StudentController::class);
 
     // Routes for Room Allocation Process
@@ -60,10 +60,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Routes for Settings
     Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     
-    // NEW: Routes for Admin Profile
+    // Routes for Admin Profile
     Route::get('settings/profile', [\App\Http\Controllers\Admin\SettingsController::class, 'showProfileForm'])->name('settings.profile');
     Route::post('settings/profile', [\App\Http\Controllers\Admin\SettingsController::class, 'updateProfile'])->name('settings.updateProfile');
-
     Route::post('settings/send-otp', [\App\Http\Controllers\Admin\SettingsController::class, 'sendOtp'])->name('settings.sendOtp');
     Route::post('settings/change-password', [\App\Http\Controllers\Admin\SettingsController::class, 'changePassword'])->name('settings.changePassword');
 });
