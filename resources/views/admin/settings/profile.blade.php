@@ -68,7 +68,7 @@
         margin-left: 25%;
     }
     .btn {
-        flex-grow: 1; /* Makes buttons share space equally */
+        flex-grow: 1; 
         padding: 0.85rem;
         font-size: 1rem;
         font-weight: 600;
@@ -84,7 +84,6 @@
     .btn-secondary { background-color: #858796; color: white; }
     .btn-secondary:hover { background-color: #717384; }
 
-    /* --- BEAUTIFUL MODAL STYLES --- */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
     .modal-content { background-color: #fefefe; margin: 10% auto; padding: 30px; border: none; width: 90%; max-width: 450px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
@@ -94,7 +93,6 @@
     .modal-step { display: none; }
     .modal-step.active { display: block; }
     
-    /* Modal Form Element Styles */
     .modal .form-group { margin-bottom: 1rem; }
     .modal label { text-align: left; display: block; margin-bottom: 5px; color: #555; font-weight: 500; }
     .modal input[type="text"], .modal input[type="password"], .modal input[type="email"] {
@@ -103,14 +101,12 @@
     }
     .modal input:focus { outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2); }
 
-    /* Modal Button Styles */
     .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
     .modal .btn { flex-grow: 1; padding: 0.75rem; font-size: 0.9rem; }
     .btn-primary { background-color: #4e73df; color: white; }
     .btn-secondary { background-color: #858796; color: white; }
     .btn-submit { background-color: #1cc88a; color: white; }
     
-    /* Modal Message/Alert Styles */
     #modal-message { padding: 10px; border-radius: 5px; margin-top: 15px; font-weight: 500; display: none; text-align: center; }
     #modal-message.success { background-color: #d1fae5; color: #065f46; }
     #modal-message.error { background-color: #fee2e2; color: #991b1b; }
@@ -120,7 +116,6 @@
         background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 500;
     }
     
-    /* UPDATED: Resend OTP link container */
     .resend-container {
         text-align: center;
         margin-top: 1.5rem;
@@ -146,20 +141,18 @@
         text-decoration: none;
     }
 
-    /* Styles to position the "eye" icon inside the input field */
     .password-group {
         position: relative;
     }
     .password-toggle {
         position: absolute;
-        top: 65%; /* Vertically center relative to the label + input */
+        top: 65%;
         right: 15px;
         transform: translateY(-50%);
         cursor: pointer;
         color: #858796;
-        user-select: none; /* Prevents text selection on double click */
+        user-select: none; 
     }
-    /* Add padding to the password input so text doesn't go under the icon */
     .modal input[type="password"] {
         padding-right: 40px;
     }
@@ -288,11 +281,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const provinceSelect = document.getElementById('province-select');
     const districtSelect = document.getElementById('district-select');
 
-    // Get the student's saved data from Blade
     const savedProvince = "{{ old('province', $admin->province ?? '') }}";
     const savedDistrict = "{{ old('district', $admin->district ?? '') }}";
 
-    // Populate the Province dropdown
     provinceSelect.innerHTML = '<option value="">Select Province...</option>';
     for (const province in locationData) {
         const option = document.createElement('option');
@@ -317,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updateDistricts();
     provinceSelect.addEventListener('change', updateDistricts);
 
-    // --- Confirmation Modal Logic ---
     const modal = document.getElementById('confirmModal');
     const updateProfileBtn = document.getElementById('updateProfileBtn');
     const mainForm = document.getElementById('updateProfileForm');

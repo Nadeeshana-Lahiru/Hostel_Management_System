@@ -4,14 +4,12 @@
 
 @section('content')
 <style>
-    /* Main Page Styles */
     .settings-card { background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 600px; margin: auto; }
     .settings-section { border-bottom: 1px solid #e3e6f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
     .settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     .settings-section h5 { font-size: 1.2rem; font-weight: 600; color: #5a5c69; margin-bottom: 1rem; }
     .account-email { font-size: 1rem; color: #333; background: #f8f9fc; padding: 0.75rem; border-radius: 5px; border: 1px solid #e3e6f0; }
     
-    /* General Button Styles */
     .btn {
         width: 50%;
         padding: 0.75rem;
@@ -33,7 +31,6 @@
     .btn-primary { background-color: #4e73df; color: #fff; }
     .btn-submit { background-color: #1cc88a; color: #fff; }
 
-    /* Modal Styles */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
     .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 450px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: scale(0.95);} to {opacity: 1; transform: scale(1);} }
@@ -43,7 +40,6 @@
     .modal-step { display: none; }
     .modal-step.active { display: block; }
 
-    /* Form Styles (Inside Modal) */
     .modal .form-group label { font-weight: 600; margin-bottom: 0.5rem; color: #5a5c69; display: block; }
     .modal .form-group input {
         width: 100%;
