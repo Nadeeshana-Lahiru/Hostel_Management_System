@@ -71,12 +71,27 @@
 </style>
 
 <div class="settings-card">
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
     <div class="settings-section">
         <h5>Account Details</h5>
-        <p class="account-email"><strong>Email:</strong> {{ Auth::user()->email }}</p>
+        @if($admin)
+            <div class="details-grid">
+                <div class="detail-item"><strong>Full Name:</strong><span>{{ $admin->full_name }}</span></div>
+                <div class="detail-item"><strong>NIC:</strong><span>{{ $admin->nic }}</span></div>
+                <div class="detail-item"><strong>Email:</strong><span>{{ $admin->email }}</span></div>
+                <div class="detail-item"><strong>Telephone:</strong><span>{{ $admin->telephone }}</span></div>
+            </div>
+        @else
+            <p>Your profile is not yet updated. Please update your profile.</p>
+        @endif
     </div>
 
     <div class="settings-section">
+        <h5>Actions</h5>
+        <a href="{{ route('admin.settings.profile') }}" class="btn btn-primary" style="margin-bottom: 1rem;">Update Profile</a>
         <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
         <form action="{{ route('logout') }}" method="POST" style="margin-top: 1rem;">
             @csrf
@@ -135,42 +150,4 @@
     </div>
 </div>
 
-<script>
-    // Your Javascript for the modal remains the same
-    document.addEventListener('DOMContentLoaded', function () {
-        const modal = document.getElementById('passwordModal');
-        const changePasswordBtn = document.getElementById('changePasswordBtn');
-        const closeBtn = document.querySelector('.close-button');
-        const modalError = document.getElementById('modal-error');
-
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-
-        changePasswordBtn.onclick = function() { modal.style.display = 'block'; }
-        closeBtn.onclick = function() { modal.style.display = 'none'; resetModal(); }
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-                resetModal();
-            }
-        }
-        
-        function resetModal() { /* ... reset logic ... */ }
-        function showError(message) { /* ... error logic ... */ }
-    // Handle Step 1: Send OTP
-    document.getElementById('sendOtpForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        // UPDATED FETCH URL
-        fetch('{{ route("admin.settings.sendOtp") }}', { /* ... */ });
-    });
-
-    // Handle Step 2: Verify OTP
-    document.getElementById('verifyOtpForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        // UPDATED FETCH URL
-        fetch('{{ route("admin.settings.verifyOtp") }}', { /* ... */ });
-    });
-    });
-</script>
 @endsection

@@ -47,6 +47,12 @@ class User extends Authenticatable
         ];
     }
 
+    // A User can have one Admin profile
+    public function admin()
+    {
+        return $this->hasOne(Admin::class);
+    }
+
     // A User can have one Warden profile
     public function warden()
     {

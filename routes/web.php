@@ -59,8 +59,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Routes for Settings
     Route::get('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    
+    // NEW: Routes for Admin Profile
+    Route::get('settings/profile', [\App\Http\Controllers\Admin\SettingsController::class, 'showProfileForm'])->name('settings.profile');
+    Route::post('settings/profile', [\App\Http\Controllers\Admin\SettingsController::class, 'updateProfile'])->name('settings.updateProfile');
+
     Route::post('settings/send-otp', [\App\Http\Controllers\Admin\SettingsController::class, 'sendOtp'])->name('settings.sendOtp');
-    Route::post('settings/verify-otp', [\App\Http\Controllers\Admin\SettingsController::class, 'verifyOtp'])->name('settings.verifyOtp'); // New route
     Route::post('settings/change-password', [\App\Http\Controllers\Admin\SettingsController::class, 'changePassword'])->name('settings.changePassword');
 });
 

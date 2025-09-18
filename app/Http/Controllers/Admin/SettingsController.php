@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetOtpMail;
 use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -14,7 +17,54 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        return view('admin.settings.index');
+        // Get the logged-in user and their admin profile data
+        $user = Auth::user();
+        $admin = $user->admin; // This uses the new relationship
+        return view('admin.settings.index', compact('admin'));
+    }
+
+    /**
+     * NEW: Show the form for editing the admin's profile.
+     */
+    public function showProfileForm()
+    {
+        $admin = Auth::user()->admin;
+        return view('admin.settings.profile', compact('admin'));
+    }
+
+    /**
+     * NEW: Update the admin's profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        // Validation rules
+        $request->validate([
+            'initial_name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
+            // Ensure email is unique, but ignore the current admin's user record
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'nic' => ['required', 'string', 'max:20', Rule::unique('admins')->ignore($user->admin->id ?? null)],
+            'gender' => 'required|in:male,female',
+            'address' => 'required|string',
+            'dob' => 'required|date',
+            'telephone' => 'required|string|max:15',
+            // ... add other fields
+        ]);
+
+        // Update the User model (for email)
+        $user->email = $request->email;
+        $user->username = $request->email; // Keep username and email in sync
+        $user->save();
+
+        // Update or Create the Admin profile details
+        Admin::updateOrCreate(
+            ['user_id' => $user->id], // Find the admin profile by user_id
+            $request->except(['_token']) // Update with all other form data
+        );
+
+        return redirect()->route('admin.settings.index')->with('success', 'Your profile has been updated successfully!');
     }
 
     public function sendOtp(Request $request)
