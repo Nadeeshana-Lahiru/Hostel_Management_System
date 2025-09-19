@@ -17,7 +17,14 @@
         .header-left { font-size: 1.5rem; color: #333; }
         .header-right .logout-form button { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
         .main-content { background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* --- ADD THESE STYLES FOR THE ALERTS --- */
+        .alert { padding: 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; position: relative; }
+        .alert-success { color: #0f5132; background-color: #d1e7dd; border-color: #badbcc; }
+        .alert-danger { color: #842029; background-color: #f8d7da; border-color: #f5c2c7; }
+        .alert-dismissible .btn-close { position: absolute; top: 0; right: 0; z-index: 2; padding: 1.25rem 1rem; background: none; border: 0; cursor: pointer; font-size: 1.2rem; font-weight: bold; color: inherit; }
     </style>
+    @stack('styles')
 </head>
 <body>
     <div class="wrapper">
@@ -52,10 +59,23 @@
 
         <div class="content">
             <header class="header">
-                <div class="header-left">
-                    @yield('page-title')
-                </div>
+                <div class="header-left">@yield('page-title')</div>
             </header>
+            
+            <div class="container-fluid" style="padding: 0;">
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Close">×</button>
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Close">×</button>
+                    </div>
+                @endif
+            </div>
             
             <main class="main-content">
                 @yield('content')

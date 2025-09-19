@@ -21,7 +21,7 @@ class SettingsController extends Controller
     {
  
         $user = Auth::user();
-        $admin = $user->admin; // This uses the new relationship
+        $admin = $user->admin;
         return view('admin.settings.index', compact('admin'));
     }
 

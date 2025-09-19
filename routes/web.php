@@ -107,6 +107,8 @@ Route::prefix('warden')->name('warden.')->group(function () {
 
     // Settings
     Route::get('settings', [\App\Http\Controllers\Warden\SettingsController::class, 'index'])->name('settings.index');
+    Route::get('settings/profile', [\App\Http\Controllers\Warden\SettingsController::class, 'showProfileForm'])->name('settings.profile');
+    Route::post('settings/profile', [\App\Http\Controllers\Warden\SettingsController::class, 'updateProfile'])->name('settings.updateProfile');
     Route::post('settings/send-otp', [\App\Http\Controllers\Warden\SettingsController::class, 'sendOtp'])->name('settings.sendOtp');
     Route::post('settings/verify-otp', [\App\Http\Controllers\Warden\SettingsController::class, 'verifyOtp'])->name('settings.verifyOtp'); // New route
     Route::post('settings/change-password', [\App\Http\Controllers\Warden\SettingsController::class, 'changePassword'])->name('settings.changePassword');

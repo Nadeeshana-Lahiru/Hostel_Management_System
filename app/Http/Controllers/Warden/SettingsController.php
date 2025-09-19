@@ -4,19 +4,22 @@ namespace App\Http\Controllers\Warden;
 
 use App\Mail\PasswordResetOtpMail;
 use App\Models\User;
+use App\Models\Warden; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule; 
 use Illuminate\Validation\Rules\Password;
 
 class SettingsController extends WardenBaseController
 {
     public function index()
     {
-        return view('warden.settings.index');
+        $warden = Auth::user()->warden; 
+        return view('warden.settings.index', compact('warden'));
     }
 
     /**
@@ -105,5 +108,43 @@ class SettingsController extends WardenBaseController
         
         // MODIFIED: Return a JSON response instead of a redirect
         return response()->json(['message' => 'Password changed successfully!']);
+    }
+
+    public function showProfileForm()
+    {
+        $warden = Auth::user()->warden;
+        return view('warden.settings.profile', compact('warden'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $warden = $user->warden;
+
+        $request->validate([
+            'initial_name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'nic' => ['required', 'string', 'max:20', Rule::unique('wardens')->ignore($warden->id ?? null)],
+            'gender' => 'required|in:male,female',
+            'address' => 'required|string',
+            'dob' => 'required|date',
+            'telephone_number' => 'required|string|max:15',
+            'nationality' => 'required|string',
+            'civil_status' => 'required|string',
+            'province' => 'required|string',
+            'district' => 'required|string',
+        ]);
+
+        $user->email = $request->email;
+        $user->username = $request->email;
+        $user->save();
+
+        Warden::updateOrCreate(
+            ['user_id' => $user->id],
+            $request->except(['_token', 'email'])
+        );
+
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully!']);
     }
 }
