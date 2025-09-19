@@ -50,7 +50,10 @@ class SettingsController extends Controller
             'address' => 'required|string',
             'dob' => 'required|date',
             'telephone' => 'required|string|max:15',
-            // ... add other fields
+            'nationality' => 'required|string',
+            'civil_status' => 'required|string',
+            'province' => 'required|string',
+            'district' => 'required|string',
         ]);
 
         // Update the User model (for email)
@@ -61,10 +64,10 @@ class SettingsController extends Controller
         // Update or Create the Admin profile details
         Admin::updateOrCreate(
             ['user_id' => $user->id], // Find the admin profile by user_id
-            $request->except(['_token']) // Update with all other form data
+            $request->except(['_token', 'email']) // Update with all other form data
         );
 
-        return redirect()->route('admin.settings.index')->with('success', 'Your profile has been updated successfully!');
+        return response()->json(['success' => true, 'message' => 'Your profile has been updated successfully!']);
     }
 
     public function sendOtp(Request $request)

@@ -173,9 +173,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('admin.settings.updateProfile') }}" method="POST">
-        @csrf
-        <form id="updateProfileForm" action="{{ route('admin.settings.updateProfile') }}" method="POST">
+    <form id="updateProfileForm" action="{{ route('admin.settings.updateProfile') }}" method="POST">
         @csrf
         <fieldset>
             <legend>Personal Information</legend>
@@ -244,7 +242,7 @@
         </fieldset>
 
         <div class="form-buttons">
-            <button type="submit" class="btn btn-submit">Update Profile</button>
+            <button type="button" id="updateProfileBtn" class="btn btn-submit">Update Profile</button>
             <a href="{{ route('admin.settings.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
@@ -252,11 +250,23 @@
 
 <div id="confirmModal" class="modal">
     <div class="modal-content">
-        <h3>Confirm Your Update</h3>
+        <h3>Confirm the Update</h3>
         <p>Are you sure you want to save these changes to your profile?</p>
         <div class="modal-buttons">
             <button type="button" class="btn btn-secondary" id="cancelUpdate">Cancel</button>
-            <button type="button" class="btn btn-primary" id="confirmUpdate">OK</button>
+            <button type="button" class="btn btn-primary" id="confirmUpdate">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Success!</h3>
+        </div>
+        <p style="padding: 1rem 0; text-align: center; font-size: 1.1rem;">Your profile has been updated successfully.</p>
+        <div class="modal-buttons" style="justify-content: center;">
+            <button type="button" class="btn btn-primary" id="successOkBtn" style="flex-grow: 0.5;">OK</button>
         </div>
     </div>
 </div>
@@ -313,15 +323,56 @@ document.addEventListener('DOMContentLoaded', function () {
     const mainForm = document.getElementById('updateProfileForm');
     const cancelUpdateBtn = document.getElementById('cancelUpdate');
     const confirmUpdateBtn = document.getElementById('confirmUpdate');
+    const successOkBtn = document.getElementById('successOkBtn');
 
     updateProfileBtn.addEventListener('click', function(e) {
         e.preventDefault();
         modal.style.display = 'block';
     });
 
-    cancelUpdateBtn.onclick = function() { modal.style.display = 'none'; }
-    confirmUpdateBtn.onclick = function() { mainForm.submit(); }
-    window.onclick = function(event) { if (event.target == modal) { modal.style.display = 'none'; } }
+    cancelUpdateBtn.onclick = function() {
+        modal.style.display = 'none';
+    }
+    
+    successOkBtn.onclick = function() {
+        successModal.style.display = 'none';
+        window.location.href = "{{ route('admin.settings.index') }}"; 
+    }
+    
+    // UPDATED: This is the biggest change. We now submit the form via AJAX.
+    confirmUpdateBtn.onclick = function() {
+        // Get the form's data
+        const formData = new FormData(mainForm);
+        // Get the CSRF token from the hidden input field
+        const csrfToken = document.querySelector('input[name="_token"]').value;
+
+        // Use the Fetch API to submit the form in the background
+        fetch(mainForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json' // Important for Laravel to know it's an AJAX request
+            },
+            body: formData
+        })
+        .then(response => response.json()) // Get the response as JSON
+        .then(data => {
+            if (data.success) {
+                // If the server responds with success...
+                confirmModal.style.display = 'none'; // Hide the first modal
+                successModal.style.display = 'block'; // Show the new success modal
+            } else {
+                // Handle potential errors if your controller sends them
+                alert('An error occurred. Please try again.');
+                console.error('Error:', data.errors || 'Unknown error');
+            }
+        })
+        .catch(error => {
+            // Handle network errors
+            console.error('Fetch Error:', error);
+            alert('A network error occurred. Please check your connection and try again.');
+        });
+    }
 });
 </script>
 @endpush
