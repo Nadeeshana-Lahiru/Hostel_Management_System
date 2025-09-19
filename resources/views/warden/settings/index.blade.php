@@ -73,11 +73,6 @@
 
     <div class="settings-section">
         <h5>Account Details</h5>
-        <p class="account-email"><strong>Email:</strong> {{ Auth::user()->email }}</p>
-    </div>
-
-    <div class="settings-section">
-        <h5>Account Details</h5>
         @if($warden && $warden->full_name)
             {{-- This block now shows if the warden profile is filled out --}}
             <div class="details-grid">

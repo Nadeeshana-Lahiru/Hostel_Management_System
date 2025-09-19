@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Student;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -28,34 +30,41 @@ class LoginController extends Controller
             'user_type' => 'required|in:admin,warden,student',
         ]);
 
-        $credentials = $request->only('username', 'password');
         $userType = $request->input('user_type');
 
-        // Add the role to the credentials check
-        $credentials['role'] = $userType;
+        // --- NEW LOGIC FOR STUDENT LOGIN ---
+        if ($userType === 'student') {
+            // 1. Find the student by their registration number
+            $student = Student::where('reg_no', $request->username)->first();
 
-        if (Auth::attempt($credentials)) {
-            // Authentication passed...
-            $request->session()->regenerate();
+            // 2. Check if the student exists and the password is correct for their associated user account
+            if ($student && Hash::check($request->password, $student->user->password)) {
+                // 3. Log in the user associated with the student profile
+                Auth::login($student->user);
+                $request->session()->regenerate();
+                return redirect()->intended(route('student.dashboard'))->with('success', 'Welcome back!');
+            }
+        } 
+        // --- EXISTING LOGIC FOR ADMIN & WARDEN ---
+        else {
+            $credentials = [
+                'username' => $request->username, // This is the email for admin/warden
+                'password' => $request->password,
+                'role' => $userType,
+            ];
 
-            // Redirect based on user type
-            switch ($userType) {
-                case 'admin':
-                    // ADD a success message to the redirect
-                    return redirect()->intended(route('admin.dashboard'))
-                        ->with('success', 'Welcome back!');
-                case 'warden':
-                    // ADD a success message to the redirect
-                    return redirect()->intended(route('warden.dashboard'))
-                        ->with('success', 'Welcome back!');
-                case 'student':
-                    // ADD a success message to the redirect
-                    return redirect()->intended(route('student.dashboard'))
-                        ->with('success', 'Welcome back!');
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                switch ($userType) {
+                    case 'admin':
+                        return redirect()->intended(route('admin.dashboard'))->with('success', 'Welcome back!');
+                    case 'warden':
+                        return redirect()->intended(route('warden.dashboard'))->with('success', 'Welcome back!');
+                }
             }
         }
 
-        // Authentication failed...
+        // Authentication failed for any user type...
         return back()->with('error', 'The provided credentials do not match our records.');
     }
 

@@ -4,19 +4,22 @@ namespace App\Http\Controllers\Student;
 
 use App\Mail\PasswordResetOtpMail;
 use App\Models\User;
+use App\Models\Student; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule; 
 use Illuminate\Validation\Rules\Password;
 
 class SettingsController extends StudentBaseController
 {
     public function index()
     {
-        return view('student.settings.index');
+        $student = Auth::user()->student; 
+        return view('student.settings.index', compact('student'));
     }
 
     /**
@@ -102,5 +105,45 @@ class SettingsController extends StudentBaseController
 
         Session::flash('success', 'You have successfully changed your password.');
         return response()->json(['message' => 'Password changed successfully!']);
+    }
+
+    public function showProfileForm()
+    {
+        $student = Auth::user()->student;
+        return view('student.settings.profile', compact('student'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        // Validation rules based on your students table
+        $request->validate([
+            'initial_name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'nic' => ['required', 'string', 'max:20', Rule::unique('students')->ignore($student->id ?? null)],
+            'gender' => 'required|in:male,female',
+            'address' => 'required|string',
+            'dob' => 'required|date',
+            'telephone_number' => 'required|string|max:15',
+            'province' => 'required|string',
+            'district' => 'required|string',
+            'guardian_name' => 'required|string|max:255',
+            'guardian_relationship' => 'required|string|max:255',
+            'guardian_mobile' => 'required|string|max:15',
+        ]);
+
+        $user->email = $request->email;
+        $user->username = $request->email;
+        $user->save();
+
+        Student::updateOrCreate(
+            ['user_id' => $user->id],
+            $request->except(['_token', 'email'])
+        );
+
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully!']);
     }
 }

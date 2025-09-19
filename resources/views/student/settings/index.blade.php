@@ -11,11 +11,25 @@
     .settings-section h5 { font-size: 1.2rem; font-weight: 600; color: #5a5c69; margin-bottom: 1rem; }
     .account-email { font-size: 1rem; color: #333; background: #f8f9fc; padding: 0.75rem; border-radius: 5px; border: 1px solid #e3e6f0; }
     
+    /* Details Grid Layout and Item Styles */
+    .details-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+    .detail-item { display: flex; flex-direction: column; background: #f8f9fc; padding: 0.75rem; border-radius: 5px; border: 1px solid #e3e6f0; }
+    .detail-label { font-weight: 600; color: #5a5c69; font-size: 0.8rem; margin-bottom: 0.25rem; }
+
+    .more-details { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out; }
+    .more-details.show { max-height: 500px; margin-top: 1.5rem; }
+    .more-details .details-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .action-buttons { display: flex; gap: 1rem; margin-top: 1rem; }
+
     /* General Button Styles for the Page */
     .btn { width: 100%; padding: 0.75rem; font-size: 1rem; font-weight: 600; border-radius: 5px; border: none; cursor: pointer; text-align: center; transition: all 0.2s; }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
     .btn-warning { background-color: #f6c23e; color: #fff; }
     .btn-danger { background-color: #e74a3b; color: #fff; }
+    .btn-primary { background-color: #4e73df; color: #fff; }
+    .btn-secondary { background-color: #f8f9fc; color: #5a5c69; border: 1px solid #d1d3e2; margin-top:1rem;}
+    .btn-secondary:hover { background-color: #e3e6f0; }
 
     /* --- BEAUTIFUL MODAL STYLES --- */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
@@ -23,7 +37,7 @@
     @keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e3e6f0; padding-bottom: 10px; margin-bottom: 20px; }
     .modal-header h3 { margin: 0; color: #333; }
-    .close-button { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+    span.close-button { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
     .modal-step { display: none; }
     .modal-step.active { display: block; }
     
@@ -37,7 +51,7 @@
     .modal input:focus { outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2); }
 
     /* Modal Button Styles */
-    .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
     .modal .btn { flex-grow: 1; padding: 0.75rem; font-size: 0.9rem; }
     .btn-primary { background-color: #4e73df; color: white; }
     .btn-secondary { background-color: #858796; color: white; }
@@ -100,22 +114,48 @@
 
 <div class="settings-card">
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <div class="settings-section">
         <h5>Account Details</h5>
-        <p class="account-email"><strong>Email:</strong> {{ Auth::user()->email }}</p>
-    </div>
+        @if($student && $student->full_name)
+            {{-- This block shows if the student profile is filled out --}}
+            <div class="details-grid">
+                <div class="detail-item"><span class="detail-label">Full Name:</span><span>{{ $student->full_name }}</span></div>
+                <div class="detail-item"><span class="detail-label">Email:</span><span>{{ Auth::user()->email }}</span></div>
+                <div class="detail-item"><span class="detail-label">Telephone:</span><span>{{ $student->telephone_number }}</span></div>
+            </div>
 
+            <div id="more-details-content" class="more-details">
+                <div class="details-grid">
+                    <div class="detail-item"><span class="detail-label">Registration No:</span><span>{{ $student->reg_no }}</span></div>
+                    <div class="detail-item"><span class="detail-label">Faculty:</span><span>{{ $student->faculty }}</span></div>
+                    <div class="detail-item"><span class="detail-label">NIC:</span><span>{{ $student->nic }}</span></div>
+                    <div class="detail-item"><span class="detail-label">Address:</span><span>{{ $student->address }}</span></div>
+                </div>
+            </div>
+
+            <button id="toggle-details-btn" class="btn btn-secondary">More Details</button>
+        @else
+            {{-- This block shows if the student profile is NOT filled out --}}
+            <p>Your profile is not yet completed. <a href="{{ route('student.settings.profile') }}">Please update your profile.</a></p>
+        @endif
+    </div>
     <div class="settings-section">
         <h5>Actions</h5>
-        <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
-        <form action="{{ route('logout') }}" method="POST" style="margin-top: 1rem;">
-            @csrf
-            <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
+        <div class="action-buttons">
+            <a href="{{ route('student.settings.profile') }}" class="btn btn-primary">Update Profile</a>
+            <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
+            <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="width: 100%;">
+                @csrf
+                <button type="submit" id="logoutBtn" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -179,6 +219,17 @@
         </div>
         
         <div id="modal-message"></div>
+    </div>
+</div>
+
+<div id="logoutConfirmModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Confirm Logout</h3></div>
+        <p style="text-align: center; font-size: 1.1rem; padding: 1rem 0;">Are you sure you want to log out?</p>
+        <div class="modal-buttons">
+            <button type="button" id="cancelLogoutBtn" class="btn btn-secondary">Cancel</button>
+            <button type="button" id="confirmLogoutBtn" class="btn btn-danger">Yes, Logout</button>
+        </div>
     </div>
 </div>
 @endsection
@@ -308,6 +359,36 @@ document.addEventListener('DOMContentLoaded', function () {
         // The controller flashed the success message, so a simple reload will show it.
         window.location.reload();
     });
+
+    const toggleBtn = document.getElementById('toggle-details-btn');
+    const moreDetailsContent = document.getElementById('more-details-content');
+    if(toggleBtn && moreDetailsContent){ 
+        toggleBtn.addEventListener('click', function() { 
+            moreDetailsContent.classList.toggle('show'); 
+            this.textContent = moreDetailsContent.classList.contains('show') ? 'Hide' : 'More Details'; 
+        }); 
+    }
+    const logoutModal = document.getElementById('logoutConfirmModal');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutForm = document.getElementById('logoutForm');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    if(logoutBtn){ 
+        logoutBtn.addEventListener('click', function(event) { 
+            event.preventDefault(); 
+            logoutModal.style.display = 'block'; 
+        }); 
+    }
+    if(cancelLogoutBtn){ 
+        cancelLogoutBtn.addEventListener('click', function() { 
+            logoutModal.style.display = 'none'; 
+        }); 
+    }
+    if(confirmLogoutBtn){ 
+        confirmLogoutBtn.addEventListener('click', function() { 
+            logoutForm.submit(); 
+        }); 
+    }
 });
 </script>
 @endpush
