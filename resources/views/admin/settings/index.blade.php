@@ -10,27 +10,6 @@
     .settings-section h5 { font-size: 1.2rem; font-weight: 600; color: #5a5c69; margin-bottom: 1rem; }
     .account-email { font-size: 1rem; color: #333; background: #f8f9fc; padding: 0.75rem; border-radius: 5px; border: 1px solid #e3e6f0; }
     
-    .btn {
-        width: 50%;
-        padding: 0.75rem;
-        font-size: 1rem;
-        font-weight: 600;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        text-align: center;
-        transition: all 0.2s ease-in-out;
-        margin-left: 25%;;
-    }
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    .btn-warning { background-color: #f6c23e; color: #fff; }
-    .btn-danger { background-color: #e74a3b; color: #fff; }
-    .btn-primary { background-color: #4e73df; color: #fff; }
-    .btn-submit { background-color: #1cc88a; color: #fff; }
-
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
     .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 450px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: scale(0.95);} to {opacity: 1; transform: scale(1);} }
@@ -64,6 +43,63 @@
         font-weight: 500;
         display: none; 
     }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+    .detail-item { /* No changes here, just for context */
+        display: flex; flex-direction: column; background: #f8f9fc; padding: 0.75rem;
+        border-radius: 5px; border: 1px solid #e3e6f0;
+    }
+    .detail-label { /* No changes here */
+        font-weight: 600; color: #5a5c69; font-size: 0.8rem; margin-bottom: 0.25rem;
+    }
+
+    /* --- NEW ANIMATION & LAYOUT STYLES --- */
+    .more-details {
+        max-height: 0; /* Initially collapsed */
+        overflow: hidden; /* Hide the content when collapsed */
+        transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out; /* Smooth transition */
+    }
+    /* This class will be added by JavaScript to expand the section */
+    .more-details.show {
+        max-height: 500px; /* Animate to a height large enough for the content */
+        margin-top: 1.5rem; /* Add space when it appears */
+    }
+    /* UPDATED: Grid inside 'more-details' is now TWO columns */
+    .more-details .details-grid {
+        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        gap: 1rem; /* Space between items */
+    }
+
+    /* --- NEW BUTTON LAYOUT STYLES --- */
+    .action-buttons {
+        display: flex; /* Arrange buttons horizontally */
+        gap: 1rem; /* Space between buttons */
+        margin-top: 1rem;
+    }
+    /* Base button style adjustments */
+    .btn {
+        width: 100%; /* Make buttons fill the flex container space */
+        padding: 0.75rem; font-size: 0.9rem; font-weight: 600; border-radius: 5px;
+        border: none; cursor: pointer; text-align: center; text-decoration: none;
+        transition: all 0.2s ease-in-out;
+        /* REMOVED margin-left, as flexbox now handles layout */
+    }
+    .btn:hover {
+        transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .btn-secondary {
+        background-color: #f8f9fc; color: #5a5c69; border: 1px solid #d1d3e2;
+    }
+    .btn-secondary:hover { background-color: #e3e6f0; }
+    .btn-warning { background-color: #f6c23e; color: #fff; }
+    .btn-danger { background-color: #e74a3b; color: #fff; }
+    .btn-primary { background-color: #4e73df; color: #fff; }
+
 </style>
 
 <div class="settings-card">
@@ -75,11 +111,59 @@
         <h5>Account Details</h5>
         @if($admin)
             <div class="details-grid">
-                <div class="detail-item"><strong>Full Name:</strong><span>{{ $admin->full_name }}</span></div>
-                <div class="detail-item"><strong>NIC:</strong><span>{{ $admin->nic }}</span></div>
-                <div class="detail-item"><strong>Email:</strong><span>{{ $admin->email }}</span></div>
-                <div class="detail-item"><strong>Telephone:</strong><span>{{ $admin->telephone }}</span></div>
+                <div class="detail-item">
+                    <span class="detail-label">Full Name:</span>
+                    <span>{{ $admin->full_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span>{{ Auth::user()->email }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Telephone:</span>
+                    <span>{{ $admin->telephone }}</span>
+                </div>
             </div>
+
+            <div id="more-details-content" class="more-details">
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Name with Initials:</span>
+                        <span>{{ $admin->initial_name }}</span>
+                    </div>
+                     <div class="detail-item">
+                        <span class="detail-label">NIC:</span>
+                        <span>{{ $admin->nic }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Address:</span>
+                        <span>{{ $admin->address }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date of Birth:</span>
+                        <span>{{ \Carbon\Carbon::parse($admin->dob)->format('F j, Y') }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Nationality:</span>
+                        <span>{{ $admin->nationality }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Civil Status:</span>
+                        <span>{{ ucfirst($admin->civil_status) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Province:</span>
+                        <span>{{ $admin->province }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">District:</span>
+                        <span>{{ $admin->district }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="toggle-details-btn" class="btn btn-secondary">More Details</button>
+
         @else
             <p>Your profile is not yet updated. Please update your profile.</p>
         @endif
@@ -87,12 +171,14 @@
 
     <div class="settings-section">
         <h5>Actions</h5>
-        <a href="{{ route('admin.settings.profile') }}" class="btn btn-primary" style="margin-bottom: 1rem;">Update Profile</a>
-        <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
-        <form action="{{ route('logout') }}" method="POST" style="margin-top: 1rem;">
-            @csrf
-            <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
+        <div class="action-buttons">
+            <a href="{{ route('admin.settings.profile') }}" class="btn btn-primary">Update Profile</a>
+            <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
+            <form action="{{ route('logout') }}" method="POST" style="width: 100%;">
+                @csrf
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -147,3 +233,26 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggle-details-btn');
+    const moreDetailsContent = document.getElementById('more-details-content');
+
+    if (toggleBtn && moreDetailsContent) {
+        toggleBtn.addEventListener('click', function() {
+            // Toggle the .show class on the content div
+            moreDetailsContent.classList.toggle('show');
+
+            // Check if the class is now present to update the button text
+            if (moreDetailsContent.classList.contains('show')) {
+                this.textContent = 'Hide'; // Change button text to "Hide"
+            } else {
+                this.textContent = 'More Details'; // Change button text back
+            }
+        });
+    }
+});
+</script>
+@endpush
