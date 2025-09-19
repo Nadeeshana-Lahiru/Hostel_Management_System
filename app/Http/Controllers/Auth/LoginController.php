@@ -41,15 +41,17 @@ class LoginController extends Controller
             // Redirect based on user type
             switch ($userType) {
                 case 'admin':
-                    return redirect()->intended(route('admin.dashboard'));
+                    // ADD a success message to the redirect
+                    return redirect()->intended(route('admin.dashboard'))
+                        ->with('success', 'Welcome back!');
                 case 'warden':
-                    // TODO: Create warden dashboard route
-                    // return redirect()->intended(route('warden.dashboard'));
-                    return redirect()->intended(route('warden.dashboard')); 
+                    // ADD a success message to the redirect
+                    return redirect()->intended(route('warden.dashboard'))
+                        ->with('success', 'Welcome back!');
                 case 'student':
-                    // TODO: Create student dashboard route
-                    // return redirect()->intended(route('student.dashboard'));
-                    return redirect()->intended(route('student.dashboard'));
+                    // ADD a success message to the redirect
+                    return redirect()->intended(route('student.dashboard'))
+                        ->with('success', 'Welcome back!');
             }
         }
 
