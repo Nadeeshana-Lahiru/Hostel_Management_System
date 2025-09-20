@@ -4,40 +4,162 @@
 
 @section('content')
 <style>
-    /* Base Settings Card and Section Styles */
-    .settings-card { background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 700px; margin: auto; }
-    .settings-section { border-bottom: 1px solid #e3e6f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
-    .settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .settings-section h5 { font-size: 1.2rem; font-weight: 600; color: #5a5c69; margin-bottom: 1.5rem; }
+    /* Main container for the two-column layout */
+    .settings-container {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+    }
 
-    /* Details Grid Layout and Item Styles */
-    .details-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
-    .detail-item { display: flex; flex-direction: column; background: #f8f9fc; padding: 0.75rem; border-radius: 5px; border: 1px solid #e3e6f0; }
-    .detail-label { font-weight: 600; color: #5a5c69; font-size: 0.8rem; margin-bottom: 0.25rem; }
+    /* Left column for profile picture and navigation */
+    .profile-sidebar {
+        flex: 0 0 280px; /* Fixed width */
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        text-align: center;
+        position: sticky; /* Sticks to the top on scroll */
+        top: 20px;
+    }
+    .profile-picture {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        object-fit: cover;
+        border: 4px solid #e9f2ff;
+        background-color: #e9f2ff;
+        color: #4e73df;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 600;
+    }
+    .profile-sidebar h4 {
+        margin: 0.5rem 0 0.25rem;
+        font-size: 1.25rem;
+        color: #333;
+    }
+    .profile-sidebar p {
+        margin: 0;
+        color: #888;
+        font-size: 0.9rem;
+    }
 
-    /* More Details Toggle Animation */
-    .more-details { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, margin-top 0.5s ease-in-out; }
-    .more-details.show { max-height: 500px; margin-top: 1.5rem; }
-    .more-details .details-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    /* Sidebar navigation menu */
+    .profile-sidebar-nav {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eef2f7;
+    }
+    .profile-sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+    }
+    .profile-sidebar-nav li a,
+    .profile-sidebar-nav li button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        text-decoration: none;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    /* Specific colors for sidebar buttons */
+    .profile-sidebar-nav li a { color: #4e73df; }        /* Update Profile: Blue */
+    #changePasswordBtn { color: #f6c23e; }              /* Change Password: Yellow */
+    #logoutBtn { color: #e74a3b; }                      /* Logout: Red */
 
-    /* Action Buttons Layout (Update Profile, Change Password, Logout) */
-    .action-buttons { display: flex; gap: 1rem; margin-top: 1rem; }
+    /* Hover backgrounds for sidebar buttons */
+    .profile-sidebar-nav li a:hover { background-color: #e9f2ff; }
+    #changePasswordBtn:hover { background-color: #fff8e1; }
+    #logoutBtn:hover { background-color: #ffebee; }
 
-    /* General Button Styles */
-    .btn { width: 100%; padding: 0.75rem; font-size: 0.9rem; font-weight: 600; border-radius: 5px; border: none; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s ease-in-out; display: inline-flex; align-items: center; justify-content: center; }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .profile-sidebar-nav i {
+        margin-right: 15px;
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+    }
 
-    /* Specific Button Color Schemes */
-    .btn-secondary { background-color: #f8f9fc; color: #5a5c69; border: 1px solid #d1d3e2; margin-top:1rem;}
-    .btn-secondary:hover { background-color: #e3e6f0; }
-    .btn-warning { background-color: #f6c23e; color: #fff; }
-    .btn-danger { background-color: #e74a3b; color: #fff; }
-    .btn-primary { background-color: #4e73df; color: #fff; }
-    .btn-submit { background-color: #1cc88a; color: white; }
+    /* Right column for the main content */
+    .settings-main-content {
+        flex-grow: 1;
+    }
 
-    /* Modal Styles */
+    /* Main card holding the details */
+    .settings-card { 
+        background-color: #fff; 
+        padding: 2.5rem; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .settings-section h5 { 
+        font-size: 1.4rem; 
+        font-weight: 600; 
+        color: #333; 
+        margin-bottom: 1.5rem; 
+        display: flex;
+        align-items: center;
+    }
+    .settings-section h5 i {
+        margin-right: 12px;
+        color: #4e73df;
+    }
+
+    /* Redesigned details grid */
+    .details-grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem; 
+    }
+    .detail-item {
+        background: #f8f9fc;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e3e6f0;
+        transition: all 0.2s ease;
+    }
+    .detail-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        border-color: #c4d9ff;
+    }
+    .detail-label { 
+        font-weight: 600; 
+        color: #5a5c69; 
+        font-size: 0.85rem; 
+        margin-bottom: 0.3rem; 
+        display: block;
+    }
+    .detail-value {
+        color: #333;
+        font-size: 1rem;
+    }
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* General Session Message Styles */
+    .alert-success { padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 500; }
+    .alert-danger { padding: 1rem; margin-bottom: 1.5rem; border-radius: 8px; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; font-weight: 500; }
+
+    /* --- MODAL STYLES (NO FUNCTIONAL CHANGE, JUST ALIGNING WITH NEW THEME) --- */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
-    .modal-content { background-color: #fefefe; margin: 10% auto; padding: 30px; border: none; width: 90%; max-width: 450px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
+    .modal-content { background-color: #fefefe; margin: 10% auto; padding: 30px; border: none; width: 90%; max-width: 450px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e3e6f0; padding-bottom: 10px; margin-bottom: 20px; }
     .modal-header h3 { margin: 0; color: #333; }
@@ -49,142 +171,80 @@
     .modal input[type="text"], .modal input[type="password"], .modal input[type="email"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; transition: all 0.2s; }
     .modal input:focus { outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2); }
     .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
-
-    /* --- FINAL BUTTON STYLE FIX --- */
-    /* 1. Base style for ALL modal buttons to ensure consistency */
-    .modal .btn {
-        padding: 0.6rem; /* CHANGED: Reduced from 0.8rem to 0.6rem */
-        font-size: 0.85rem; /* CHANGED: Reduced from 0.95rem to 0.85rem */
-        border-radius: 6px;
-        text-transform: capitalize;
-        border: 1px solid transparent;
-        box-sizing: border-box;
-    }
-
-    /* 2. Style for the 'Cancel' button */
-    .modal .btn-secondary.close-button {
-        background-color: #fff;
-        color: #6c757d;
-        border-color: #ced4da;
-    }
-    .modal .btn-secondary.close-button:hover {
-        background-color: #f8f9fa;
-        border-color: #b1b9c1;
-    }
-
-    /* 3. Style for the 'Send OTP' button (and other primary actions) */
-    .modal .btn-primary,
-    .modal .btn-submit {
-        background-color: #4e73df;
-        color: #fff;
-        border-color: #4e73df;
-    }
-    .modal .btn-primary:hover,
-    .modal .btn-submit:hover {
-        background-color: #2e59d9;
-        border-color: #2e59d9;
-    }
-    /* --- END OF FIX --- */
-
+    .modal .btn { width: 100%; padding: 0.75rem; font-size: 0.9rem; font-weight: 600; border-radius: 5px; border: none; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s ease-in-out; display: inline-flex; align-items: center; justify-content: center; }
+    .modal .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .modal .btn-secondary { background-color: #f8f9fc; color: #5a5c69; border: 1px solid #d1d3e2; }
+    .modal .btn-secondary:hover { background-color: #e3e6f0; }
+    .modal .btn-warning { background-color: #f6c23e; color: #fff; }
+    .modal .btn-danger { background-color: #e74a3b; color: #fff; }
+    .modal .btn-primary { background-color: #4e73df; color: #fff; }
+    .modal .btn-submit { background-color: #1cc88a; color: white; }
+    .password-group { position: relative; }
+    .password-toggle { position: absolute; top: 65%; right: 15px; transform: translateY(-50%); cursor: pointer; color: #858796; user-select: none; }
+    .modal input[type="password"] { padding-right: 40px; }
     #modal-message { padding: 10px; border-radius: 5px; margin-top: 15px; font-weight: 500; display: none; text-align: center; }
     #modal-message.success { background-color: #d1fae5; color: #065f46; }
     #modal-message.error { background-color: #fee2e2; color: #991b1b; }
-    .alert-success { padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 500; }
-    .alert-danger { padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; font-weight: 500; }
     .resend-container { text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e3e6f0; }
     #resend-otp { color: #4e73df; text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
     #resend-otp:hover { text-decoration: underline; }
     #resend-otp.disabled { color: #858796; cursor: not-allowed; text-decoration: none; }
-    .password-group { position: relative; }
-    .password-toggle { position: absolute; top: 65%; right: 15px; transform: translateY(-50%); cursor: pointer; color: #858796; user-select: none; }
-    .modal input[type="password"] { padding-right: 40px; }
 </style>
+<div class="settings-container">
+    <aside class="profile-sidebar">
+        <div class="profile-picture">{{ substr($admin->full_name ?? 'A', 0, 1) }}</div>
+        <h4>{{ $admin->full_name ?? 'Admin Name' }}</h4>
+        <p>{{ Auth::user()->email }}</p>
 
-<div class="settings-card">
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
+        <nav class="profile-sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{{ route('admin.settings.profile') }}"><i class="fas fa-edit"></i><span>Update Profile</span></a>
+                </li>
+                <li>
+                    <button id="changePasswordBtn"><i class="fas fa-key"></i><span>Change Password</span></button>
+                </li>
+                <li>
+                    <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="width: 100%;">
+                        @csrf
+                        <button type="button" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </aside>
 
-    <div class="settings-section">
-        <h5>Account Details</h5>
-        @if($admin)
-            <div class="details-grid">
-                <div class="detail-item">
-                    <span class="detail-label">Full Name:</span>
-                    <span>{{ $admin->full_name }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Email:</span>
-                    <span>{{ Auth::user()->email }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Telephone:</span>
-                    <span>{{ $admin->telephone }}</span>
-                </div>
+    <div class="settings-main-content">
+        <div class="settings-card">
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            <div class="settings-section">
+                <h5><i class="fas fa-user-circle"></i>Personal Information</h5>
+                @if($admin)
+                    <div class="details-grid">
+                        <div class="detail-item"><span class="detail-label">Full Name</span><span class="detail-value">{{ $admin->full_name }}</span></div>
+                        <div class="detail-item"><span class="detail-label">Name with Initials</span><span class="detail-value">{{ $admin->initial_name }}</span></div>
+                        <div class="detail-item"><span class="detail-label">Telephone</span><span class="detail-value">{{ $admin->telephone }}</span></div>
+                        <div class="detail-item"><span class="detail-label">NIC</span><span class="detail-value">{{ $admin->nic }}</span></div>
+                        <div class="detail-item"><span class="detail-label">Date of Birth</span><span class="detail-value">{{ \Carbon\Carbon::parse($admin->dob)->format('F j, Y') }}</span></div>
+                        <div class="detail-item"><span class="detail-label">Nationality</span><span class="detail-value">{{ $admin->nationality }}</span></div>
+                        <div class="detail-item"><span class="detail-label">Civil Status</span><span class="detail-value">{{ ucfirst($admin->civil_status) }}</span></div>
+                        <div class="detail-item"><span class="detail-label">Province</span><span class="detail-value">{{ $admin->province }}</span></div>
+                        <div class="detail-item"><span class="detail-label">District</span><span class="detail-value">{{ $admin->district }}</span></div>
+                        <div class="detail-item full-width"><span class="detail-label">Address</span><span class="detail-value">{{ $admin->address }}</span></div>
+                    </div>
+                @else
+                    <p>Your profile is not yet completed. <a href="{{ route('admin.settings.profile') }}">Please update your profile.</a></p>
+                @endif
             </div>
-
-            <div id="more-details-content" class="more-details">
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">Name with Initials:</span>
-                        <span>{{ $admin->initial_name }}</span>
-                    </div>
-                     <div class="detail-item">
-                        <span class="detail-label">NIC:</span>
-                        <span>{{ $admin->nic }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Address:</span>
-                        <span>{{ $admin->address }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Date of Birth:</span>
-                        <span>{{ \Carbon\Carbon::parse($admin->dob)->format('F j, Y') }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Nationality:</span>
-                        <span>{{ $admin->nationality }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Civil Status:</span>
-                        <span>{{ ucfirst($admin->civil_status) }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Province:</span>
-                        <span>{{ $admin->province }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">District:</span>
-                        <span>{{ $admin->district }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <button id="toggle-details-btn" class="btn btn-secondary">More Details</button>
-
-        @else
-            <p>Your profile is not yet updated. Please update your profile.</p>
-        @endif
-    </div>
-
-    <div class="settings-section">
-    <h5>Actions</h5>
-    <div class="action-buttons">
-        <a href="{{ route('admin.settings.profile') }}" class="btn btn-primary">Update Profile</a>
-        <button id="changePasswordBtn" class="btn btn-warning">Change Password</button>
-        
-        <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="width: 100%;">
-            @csrf
-            <button type="submit" id="logoutBtn" class="btn btn-danger">Logout</button>
-        </form>
-
+        </div>
     </div>
 </div>
-</div>
-
 <div id="passwordModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -242,8 +302,8 @@
         <div id="step-success" class="modal-step">
             <h3 style="color: #1cc88a;">Success!</h3>
             <p>Your password was changed successfully.</p>
-            <div class="modal-buttons" style="justify-content: center;">
-                <button type="button" id="finalOkBtn" class="btn btn-primary" style="flex-grow: 0;">OK</button>
+            <div class="modal-buttons" style="grid-template-columns: 1fr; justify-content: center;">
+                <button type="button" id="finalOkBtn" class="btn btn-primary" style="max-width: 120px; margin: auto;">OK</button>
             </div>
         </div>
         
@@ -269,26 +329,12 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleBtn = document.getElementById('toggle-details-btn');
-        const moreDetailsContent = document.getElementById('more-details-content');
+// This script block is the same as your original, with one minor tweak:
+// The 'More Details' toggle script is removed as it's no longer needed in the new design.
+// All modal functionality for password changes and logout confirmation remains unchanged.
 
-        if (toggleBtn && moreDetailsContent) {
-            toggleBtn.addEventListener('click', function() {
-                // Toggle the .show class on the content div
-                moreDetailsContent.classList.toggle('show');
-
-                // Check if the class is now present to update the button text
-                if (moreDetailsContent.classList.contains('show')) {
-                    this.textContent = 'Hide'; // Change button text to "Hide"
-                } else {
-                    this.textContent = 'More Details'; // Change button text back
-                }
-            });
-        }
-    });
-
-    // --- SCRIPT FOR PASSWORD CHANGE MODAL (ADAPTED FOR ADMIN) ---
+document.addEventListener('DOMContentLoaded', function () {
+    // --- SCRIPT FOR PASSWORD CHANGE MODAL ---
     const modal = document.getElementById('passwordModal');
     const openBtn = document.getElementById('changePasswordBtn');
     const closeBtns = document.querySelectorAll('.close-button');
@@ -306,12 +352,16 @@
     let timer;
 
     function showStep(stepToShow) {
-        [stepEmail, stepOtp, stepPassword, stepSuccess].forEach(step => step.classList.remove('active'));
-        stepToShow.classList.add('active');
-        messageDiv.style.display = 'none';
+        [stepEmail, stepOtp, stepPassword, stepSuccess].forEach(step => {
+            if(step) step.classList.remove('active');
+        });
+        if(stepToShow) stepToShow.classList.add('active');
+        if(messageDiv) messageDiv.style.display = 'none';
     }
     function showMessage(type, text) {
+        if (!messageDiv) return;
         messageDiv.className = ''; // Clear previous classes
+        messageDiv.id = 'modal-message';
         messageDiv.classList.add(type);
         messageDiv.textContent = text;
         messageDiv.style.display = 'block';
@@ -342,14 +392,14 @@
         input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    openBtn.addEventListener('click', () => { resetModal(); modal.style.display = 'block'; });
-    closeBtns.forEach(btn => btn.addEventListener('click', () => modal.style.display = 'none'));
+    if(openBtn) openBtn.addEventListener('click', () => { resetModal(); modal.style.display = 'block'; });
+    if(closeBtns) closeBtns.forEach(btn => btn.addEventListener('click', () => modal.style.display = 'none'));
     document.querySelectorAll('.password-toggle').forEach(el => el.addEventListener('click', togglePasswordVisibility));
 
-    sendOtpForm.addEventListener('submit', function(e) {
+    if(sendOtpForm) sendOtpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         showMessage('success', 'Sending...');
-        fetch('{{ route("admin.settings.sendOtp") }}', { // <-- UPDATED ROUTE
+        fetch('{{ route("admin.settings.sendOtp") }}', {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
             body: JSON.stringify({ email: currentEmail })
@@ -369,10 +419,10 @@
         });
     }
 
-    verifyOtpForm.addEventListener('submit', function(e) {
+    if(verifyOtpForm) verifyOtpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         showMessage('success', 'Verifying...');
-        fetch('{{ route("admin.settings.verifyOtp") }}', { // <-- UPDATED ROUTE
+        fetch('{{ route("admin.settings.verifyOtp") }}', {
             method: 'POST',
             body: new FormData(this),
             headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'}
@@ -383,10 +433,10 @@
         }).catch(err => showMessage('error', err.message || 'An error occurred.'));
     });
 
-    resetPasswordForm.addEventListener('submit', function(e) {
+    if(resetPasswordForm) resetPasswordForm.addEventListener('submit', function(e) {
         e.preventDefault();
         showMessage('success', 'Processing...');
-        fetch('{{ route("admin.settings.changePassword") }}', { // <-- UPDATED ROUTE
+        fetch('{{ route("admin.settings.changePassword") }}', {
             method: 'POST',
             body: new FormData(this),
             headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('#resetPasswordForm [name=_token]').value }
@@ -401,11 +451,11 @@
         });
     });
 
-    finalOkBtn.addEventListener('click', function() {
+    if(finalOkBtn) finalOkBtn.addEventListener('click', function() {
         window.location.reload();
     });
 
-    // --- NEW SCRIPT FOR LOGOUT CONFIRMATION ---
+    // --- SCRIPT FOR LOGOUT CONFIRMATION ---
     const logoutModal = document.getElementById('logoutConfirmModal');
     const logoutBtn = document.getElementById('logoutBtn');
     const logoutForm = document.getElementById('logoutForm');
@@ -413,25 +463,23 @@
     const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
 
     if (logoutBtn) {
-        // 1. When the main logout button is clicked...
         logoutBtn.addEventListener('click', function(event) {
-            event.preventDefault(); // ...stop the form from submitting...
-            logoutModal.style.display = 'block'; // ...and show the confirmation modal.
+            event.preventDefault(); 
+            logoutModal.style.display = 'block';
         });
     }
 
     if (cancelLogoutBtn) {
-        // 2. If the 'Cancel' button in the modal is clicked...
         cancelLogoutBtn.addEventListener('click', function() {
-            logoutModal.style.display = 'none'; // ...just close the modal.
+            logoutModal.style.display = 'none';
         });
     }
 
     if (confirmLogoutBtn) {
-        // 3. If the 'Yes, Logout' button is clicked...
         confirmLogoutBtn.addEventListener('click', function() {
-            logoutForm.submit(); // ...submit the original logout form.
+            logoutForm.submit(); 
         });
     }
+});
 </script>
 @endpush
