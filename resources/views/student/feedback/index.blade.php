@@ -3,13 +3,19 @@
 @section('page-title', 'Hostel Feedback Form')
 
 @section('content')
+<!-- === NEW, BEAUTIFUL STYLES FOR THE FEEDBACK PAGE === -->
 <style>
+    /* General Page Styling */
+    .feedback-container {
+        max-width: 850px;
+        margin: auto;
+    }
 
-    /* Alert Message Styles */
+    /* Polished alert messages */
     .alert {
         padding: 1rem;
         margin-bottom: 1.5rem;
-        border-radius: 5px;
+        border-radius: 8px;
         border: 1px solid transparent;
         font-weight: 500;
     }
@@ -18,47 +24,69 @@
         color: #065f46;
         border-color: #a7f3d0;
     }
-    /* Main Form Container */
-    .feedback-form-container {
-        max-width: 800px;
-        margin: auto;
+
+    /* Main Form Card */
+    .feedback-form-card {
         background-color: #fff;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    
-    /* Individual Question Card */
-    .feedback-question-card {
-        background-color: #f8f9fc;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
         border: 1px solid #e3e6f0;
     }
-    .feedback-question-card h5 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        font-weight: 600;
-        color: #5a5c69;
+    
+    /* Introduction text style */
+    .feedback-intro {
+        text-align: center; 
+        color: #858796; 
+        margin-bottom: 2.5rem;
+        font-size: 1.05rem;
+        line-height: 1.6;
     }
 
+    /* Styling for each question's card */
+    .feedback-question-card {
+        background-color: #fdfdff;
+        padding: 1.5rem 2rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e3e6f0;
+        border-left: 4px solid #e3e6f0;
+        transition: all 0.3s ease-in-out;
+    }
+    .feedback-question-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.07);
+        border-left-color: #4e73df;
+    }
+
+    /* Question text style */
+    .feedback-question-card h3 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        color: #3a3b45;
+        font-size: 1.2rem;
+    }
+
+    /* Interactive Rating Selection Group */
     .rating-group {
         display: flex;
-        /* This will space the items out evenly */
         justify-content: space-around;
         align-items: flex-start;
         flex-wrap: wrap;
+        gap: 1rem;
     }
     .rating-group label {
         position: relative;
         cursor: pointer;
         text-align: center;
-        transition: transform 0.2s ease;
-        width: 120px; /* Give each item a fixed width for better alignment */
+        transition: transform 0.2s ease, filter 0.2s ease;
+        width: 120px;
+        filter: grayscale(50%); /* Slightly desaturated when not hovered/selected */
     }
     .rating-group label:hover {
         transform: scale(1.1);
+        filter: grayscale(0%);
     }
     .rating-group input[type="radio"] {
         opacity: 0;
@@ -69,19 +97,19 @@
         height: 60px;
         stroke: #858796;
         stroke-width: 8;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     .rating-text {
         font-weight: 600;
         color: #858796;
         margin-top: 5px;
         font-size: 0.9rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     .rating-number {
         position: absolute;
         top: -10px;
-        right: 20px; /* Adjusted position */
+        right: 20px;
         width: 28px;
         height: 28px;
         border-radius: 50%;
@@ -92,111 +120,116 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     
-    /* Checked State Styling */
+    /* Styling for the selected radio button */
     .rating-group input[type="radio"]:checked + .rating-icon { stroke: #4e73df; }
-    .rating-group input[type="radio"]:checked ~ .rating-number { background-color: #4e73df; border-color: #4e73df; color: #fff; }
-    .rating-group input[type="radio"]:checked ~ .rating-text { color: #4e73df; }
+    .rating-group input[type="radio"]:checked ~ .rating-number { background-color: #4e73df; border-color: #4e73df; color: #fff; transform: scale(1.1); }
+    .rating-group input[type="radio"]:checked ~ .rating-text { color: #4e73df; font-weight: 700; }
+    .rating-group input[type="radio"]:checked + .rating-icon + .rating-number + .rating-text { /* This is a bit complex, but it targets the label of the checked radio */
+        transform: scale(1.05);
+        filter: grayscale(0%);
+    }
 
-    /* Button Container */
+    /* Beautifully styled buttons */
     .form-buttons {
         display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+        justify-content: center;
     }
     .btn {
         flex-grow: 1;
-        padding: 0.85rem;
+        max-width: 220px;
+        padding: 0.85rem 1.5rem;
         font-size: 1rem;
         font-weight: 600;
-        border-radius: 5px;
+        border-radius: 50px; /* Pill-shaped buttons */
         cursor: pointer;
         text-align: center;
         text-decoration: none;
         border: none;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .btn-submit { background-color: #1cc88a; color: white; }
-    .btn-submit:hover { background-color: #17a673; }
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 15px rgba(0,0,0,0.15);
+    }
+    .btn-submit { background: linear-gradient(45deg, #1cc88a, #13a26f); color: white; }
     .btn-secondary { background-color: #858796; color: white; }
-    .btn-secondary:hover { background-color: #717384; }
-
-    .modal {
-        display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-        width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);
-        backdrop-filter: blur(5px);
-    }
-    .modal-content {
-        background-color: #fefefe; margin: 15% auto; padding: 25px; border: 1px solid #888;
-        width: 90%; max-width: 450px; border-radius: 8px; text-align: center;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s;
-    }
+    
+    /* Polished modal styles to match settings pages */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 30px; border: none; width: 90%; max-width: 450px; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: scale(0.95);} to {opacity: 1; transform: scale(1);} }
     .modal-content h3 { margin-top: 0; font-size: 1.5rem; color: #333; }
     .modal-content p { margin-bottom: 1.5rem; color: #5a5c69; }
     .modal-buttons { display: flex; gap: 1rem; justify-content: center; }
-    .modal-buttons .btn { flex-grow: 1; max-width: 120px; }
+    .modal-buttons .btn { flex-grow: 1; max-width: 140px; }
 </style>
+<!-- === END STYLES === -->
 
-<div class="feedback-form-container">
-    <!-- @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif -->
-    <p style="text-align: center; color: #858796; margin-bottom: 2rem;">Please rate the following aspects of the hostel service from 1 (Very Unsatisfied) to 5 (Very Satisfied).</p>
-    <form action="{{ route('student.feedback.store') }}" method="POST"  id="feedbackForm">
-        @csrf
-        @php
-            $ratingsInfo = [
-                1 => ['text' => 'Very Unsatisfied', 'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M40,72 a30,30 0 0,1 48,0"/>'],
-                2 => ['text' => 'Unsatisfied',     'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M44,76 a24,24 0 0,1 40,0"/>'],
-                3 => ['text' => 'Neutral',         'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><line x1="40" y1="80" x2="88" y2="80"/>'],
-                4 => ['text' => 'Satisfied',       'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M44,76 a24,24 0 0,0 40,0"/>'],
-                5 => ['text' => 'Very Satisfied',  'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M40,84 a30,30 0 0,0 48,0"/>']
-            ];
-        @endphp
+<div class="feedback-container">
+    <div class="feedback-form-card">
+        <p class="feedback-intro">Please rate the following aspects of the hostel service from 1 (Very Unsatisfied) to 5 (Very Satisfied).</p>
+        
+        <form action="{{ route('student.feedback.store') }}" method="POST" id="feedbackForm">
+            @csrf
+            @php
+                // This PHP block defines the content for each rating. It is unchanged.
+                $ratingsInfo = [
+                    1 => ['text' => 'Very Unsatisfied', 'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M40,72 a30,30 0 0,1 48,0"/>'],
+                    2 => ['text' => 'Unsatisfied',     'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M44,76 a24,24 0 0,1 40,0"/>'],
+                    3 => ['text' => 'Neutral',         'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><line x1="40" y1="80" x2="88" y2="80"/>'],
+                    4 => ['text' => 'Satisfied',       'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M44,76 a24,24 0 0,0 40,0"/>'],
+                    5 => ['text' => 'Very Satisfied',  'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M40,84 a30,30 0 0,0 48,0"/>']
+                ];
+            @endphp
 
-        @forelse($questions as $question)
-            <div class="feedback-question-card">
-                <h3>{{ $loop->iteration }}. {{ $question->question_text }}</h3>
-                <div class="rating-group">
-                    @foreach($ratingsInfo as $i => $info)
-                        <label>
-                            <input type="radio" name="ratings[{{ $question->id }}]" value="{{ $i }}" 
-                                   {{ ($existingResponses[$question->id] ?? 0) == $i ? 'checked' : '' }} required>
-                            <svg class="rating-icon" viewBox="0 0 128 128" fill="none">
-                                {!! $info['emoji'] !!}
-                            </svg>
-                            <div class="rating-number">{{ $i }}</div>
-                            <div class="rating-text">{{ $info['text'] }}</div>
-                        </label>
-                    @endforeach
+            @forelse($questions as $question)
+                <div class="feedback-question-card">
+                    <h3>{{ $loop->iteration }}. {{ $question->question_text }}</h3>
+                    <div class="rating-group">
+                        @foreach($ratingsInfo as $i => $info)
+                            <label>
+                                <input type="radio" name="ratings[{{ $question->id }}]" value="{{ $i }}" 
+                                       {{ ($existingResponses[$question->id] ?? 0) == $i ? 'checked' : '' }} required>
+                                <svg class="rating-icon" viewBox="0 0 128 128" fill="none">
+                                    {!! $info['emoji'] !!}
+                                </svg>
+                                <div class="rating-number">{{ $i }}</div>
+                                <div class="rating-text">{{ $info['text'] }}</div>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
-        @empty
-            <div class="feedback-question-card" style="text-align: center;">
-                <p>There are currently no active feedback questions.</p>
-            </div>
-        @endforelse
+            @empty
+                <div class="feedback-question-card" style="text-align: center;">
+                    <p>There are currently no active feedback questions.</p>
+                </div>
+            @endforelse
 
-        @if(count($questions) > 0)
-        <div class="form-buttons">
-            @if($existingResponses->isNotEmpty())
-                <button type="button" id="updateFeedbackBtn" class="btn btn-submit">Update Feedback</button>
-            @else
-                <button type="submit" class="btn btn-submit">Submit Feedback</button>
+            @if(count($questions) > 0)
+            <div class="form-buttons">
+                @if($existingResponses->isNotEmpty())
+                    <button type="button" id="updateFeedbackBtn" class="btn btn-submit">Update Feedback</button>
+                @else
+                    <button type="submit" class="btn btn-submit">Submit Feedback</button>
+                @endif
+                <a href="{{ route('student.dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
             @endif
-            <a href="{{ route('student.dashboard') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-        @endif
-    </form>
+        </form>
+    </div>
 </div>
 
+<!-- MODAL MARKUP UPDATED TO MATCH NEW STYLING -->
 <div id="updateModal" class="modal">
     <div class="modal-content">
         <h3>Confirm Update</h3>
-        <p>Do you need to update your feedback?</p>
+        <p>Are you sure you want to update your previously submitted feedback?</p>
         <div class="modal-buttons">
             <button id="cancel-update" class="btn btn-secondary">Cancel</button>
             <button id="confirm-update" class="btn btn-submit">Yes, Update</button>
@@ -206,6 +239,7 @@
 @endsection
 
 @push('scripts')
+<!-- The JavaScript logic remains the same as it is perfectly functional -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const updateBtn = document.getElementById('updateFeedbackBtn');
