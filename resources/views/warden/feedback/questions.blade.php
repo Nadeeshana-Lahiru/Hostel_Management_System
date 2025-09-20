@@ -1,7 +1,7 @@
 @extends('warden.layout')
 
 @section('title', 'Manage Feedback Questions')
-@section('page-title', '')
+@section('page-title', 'Manage Questions')
 
 @section('content')
 <style>
@@ -16,46 +16,40 @@
 
     /* Modern Fieldset */
     .fieldset-modern { border: 1px solid #e3e6f0; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .legend-modern { font-weight: 600; font-size: 1.2rem; color: #4e73df; padding: 0 10px; }
+    .legend-modern { font-weight: 600; font-size: 1.2rem; color: #4e73df; padding: 0 10px; width: auto; }
 
-    /* General Form Styles */
+    /* Form Styles */
     .form-group label { font-weight: 600; margin-bottom: 0.5rem; color: #5a5c69; display: block; }
     .form-group input[type="text"] {
-        width: 100%;
-        padding: 0.75rem;
-        border-radius: 5px;
-        border: 1px solid #d1d3e2;
-        box-sizing: border-box;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%; padding: 0.75rem; border-radius: 5px; border: 1px solid #d1d3e2;
+        box-sizing: border-box; transition: border-color 0.2s, box-shadow 0.2s;
     }
     .form-group input[type="text"]:focus {
-        outline: none;
-        border-color: #4e73df;
-        box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.25);
+        outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.25);
     }
     
     /* General Button Styles */
     .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        border-radius: 5px;
-        text-decoration: none;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
+        display: inline-flex; align-items: center; gap: 6px; /* For icon alignment */
+        padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600;
+        border-radius: 5px; text-decoration: none; color: white;
+        border: none; cursor: pointer; transition: all 0.3s ease;
     }
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+    .btn i { font-size: 0.9em; } /* Icon size relative to button text */
 
-    /* Specific Button Colors */
-    .btn-primary { background-color: #4e73df; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .btn-warning { background-color: #f6c23e; }
-    .btn-danger { background-color: #e74a3b; }
-    .btn-submit { background-color: #1cc88a; } /* Green for submission */
+    /* Specific Button Colors & Gradients */
+    .btn-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
+    .btn-primary:hover { background: linear-gradient(45deg, #5a7fef, #2f56d0); }
+
+    .btn-submit { background: linear-gradient(45deg, #1cc88a, #13855c); }
+    .btn-submit:hover { background: linear-gradient(45deg, #2ce09e, #18a474); }
+
+    .btn-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+    .btn-warning:hover { background: linear-gradient(45deg, #f8d264, #eeb82a); }
+
+    .btn-danger { background: linear-gradient(45deg, #e74a3b, #b92c1e); }
+    .btn-danger:hover { background: linear-gradient(45deg, #ed6a5e, #c73a2d); }
 
     /* Question List */
     .question-list-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #e3e6f0; }
@@ -64,17 +58,20 @@
     .question-actions { display: flex; gap: 10px; }
 
     /* Modal Styles */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 25px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-    .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
-    .modal-content h3 { margin-top: 0; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+    .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #e3e6f0; }
+    .modal-header h3 { margin: 0; font-size: 1.5rem; color: #333; }
+    .close-button { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
+    .close-button:hover { color: #333; }
 </style>
 
 <div class="page-header">
     <h2>Feedback Questions</h2>
-    <a href="{{ route('warden.feedback.index') }}" class="btn btn-primary">View Analytics Report</a>
+    <a href="{{ route('warden.feedback.index') }}" class="btn btn-primary"><i class="fas fa-chart-bar"></i> View Analytics Report</a>
 </div>
 
+<!-- @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif -->
 @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
 @if($errors->any())<div class="alert alert-danger"><strong>Please correct the errors:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 
@@ -86,7 +83,7 @@
             <label for="question_text">Question Text</label>
             <input type="text" name="question_text" value="{{ old('question_text') }}" placeholder="e.g., How would you rate the hostel cleanliness?" required>
         </div>
-        <button type="submit" class="btn btn-submit" style="margin-top: 15px;">Add Question</button>
+        <button type="submit" class="btn btn-submit" style="margin-top: 15px;"><i class="fas fa-plus"></i> Add Question</button>
     </form>
 </fieldset>
 
@@ -97,11 +94,11 @@
             <li class="question-list-item">
                 <span>{{ $loop->iteration }}. {{ $question->question_text }}</span>
                 <div class="question-actions">
-                    <button class="btn btn-warning edit-btn" data-id="{{ $question->id }}" data-text="{{ $question->question_text }}">Edit</button>
-                    <form action="{{ route('warden.feedback.destroyQuestion', $question->id) }}" method="POST">
+                    <button class="btn btn-warning edit-btn" data-id="{{ $question->id }}" data-text="{{ $question->question_text }}"><i class="fas fa-edit"></i> Edit</button>
+                    <form action="{{ route('warden.feedback.destroyQuestion', $question->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this question?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
                     </form>
                 </div>
             </li>
@@ -111,10 +108,13 @@
     </ul>
 </fieldset>
 
+{{-- Edit Question Modal --}}
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h3>Edit Question</h3>
+        <div class="modal-header">
+            <h3>Edit Question</h3>
+            <span class="close-button">&times;</span>
+        </div>
         <form id="editForm" method="POST">
             @csrf
             @method('PATCH')
@@ -122,13 +122,12 @@
                 <label for="edit_question_text">Question Text</label>
                 <input type="text" name="question_text" id="edit_question_text" required>
             </div>
-            <button type="submit" class="btn btn-submit" style="margin-top: 15px;">Save Changes</button>
+            <button type="submit" class="btn btn-submit" style="margin-top: 15px;"><i class="fas fa-save"></i> Save Changes</button>
         </form>
     </div>
 </div>
 
 <script>
-// Your Javascript for the modal remains the same
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('editModal');
     const closeBtn = document.querySelector('.close-button');
