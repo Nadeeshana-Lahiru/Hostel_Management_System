@@ -13,6 +13,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            flex-direction: column;
         }
         .login-wrapper {
             display: flex;
@@ -21,12 +22,26 @@
             margin: 20px;
             background-color: #fff;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12); 
             overflow: hidden;
         }
         .login-image-panel {
-            flex-basis: 45%;
+            flex-basis: 50%;
+            position: relative;
             background-color: #f8f9fc;
+        }
+        .slideshow-image {
+            position: absolute; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out; 
+        }
+        .slideshow-image.active {
+            opacity: 1; 
         }
         .login-image-panel img {
             width: 100%;
@@ -34,7 +49,7 @@
             object-fit: cover;
         }
         .login-form-panel {
-            flex-basis: 55%;
+            flex-basis: 50%;
             padding: 3rem;
             display: flex;
             flex-direction: column;
@@ -68,7 +83,9 @@
             box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
         }
         .btn-login {
-            width: 100%;
+            width: 40%;
+            margin: 0 auto;
+            display: block;
             padding: 14px;
             border: none;
             border-radius: 8px;
@@ -123,9 +140,19 @@
             .login-wrapper { margin: 10px; flex-direction: column; }
             .error-message { position: relative; top: 0; left: 0; transform: none; margin-bottom: 1rem; }
         }
+
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #3a3b45;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+
+    <h1 class="main-title">Hostel Management SEUSL</h1>
 
     @if(session('success'))
         <div class="error-message" style="background-color: #d1fae5; color: #065f46; border-color: #a7f3d0;">{{ session('success') }}</div>
@@ -136,7 +163,9 @@
 
     <div class="login-wrapper">
         <div class="login-image-panel">
-            <img src="{{ asset('images/hostel.jpg') }}" alt="A modern hostel building">
+            <img src="{{ asset('images/hostel.jpg') }}" alt="Hostel view 1" class="slideshow-image active">
+            <img src="{{ asset('images/hostel2.jpg') }}" alt="Hostel view 2" class="slideshow-image">
+            <img src="{{ asset('images/hostel3.jpg') }}" alt="Hostel view 3" class="slideshow-image">
         </div>
         <div class="login-form-panel">
             <h2>Welcome Back!</h2>
@@ -332,6 +361,23 @@ document.addEventListener('DOMContentLoaded', function () {
             showMessage('error', errorText);
         });
     });
+
+    // --- JAVASCRIPT CHANGE: Add this new script for the slideshow ---
+    const slideshowImages = document.querySelectorAll(".slideshow-image");
+    let currentImageIndex = 0;
+
+    if (slideshowImages.length > 0) {
+        setInterval(() => {
+            // Hide the current image
+            slideshowImages[currentImageIndex].classList.remove("active");
+
+            // Calculate the index of the next image
+            currentImageIndex = (currentImageIndex + 1) % slideshowImages.length;
+
+            // Show the next image
+            slideshowImages[currentImageIndex].classList.add("active");
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
 });
 </script>
 
