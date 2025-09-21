@@ -116,12 +116,6 @@
             background: none; border: none; padding: 0; font-family: inherit; font-size: 0.9rem;
             cursor: pointer; text-decoration: none; font-weight: 500; color: #4e73df;
         }
-        /* .error-message {
-            color: #dc3545; background-color: #f8d7da; border: 1px solid #f5c6cb;
-            padding: 1rem; border-radius: 8px;
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 910px; box-sizing: border-box; z-index: 1001;
-        } */
 
         .inline-error-msg {
             color: var(--danger-color); font-size: 0.85rem; font-weight: 500;

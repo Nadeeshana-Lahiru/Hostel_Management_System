@@ -5,11 +5,45 @@
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 20px;">
-    <div class="stat-card"><h4>Total Students</h4><p>{{ $studentCount }}</p></div>
-    <div class="stat-card"><h4>Total Wardens</h4><p>{{ $wardenCount }}</p></div>
-    <div class="stat-card"><h4>Total Hostels</h4><p>{{ $hostelCount }}</p></div>
-    <div class="stat-card"><h4>Available Rooms</h4><p>{{ $availableRoomsCount }}</p></div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<div class="stat-grid">
+    <div class="stat-card students">
+        <div class="stat-icon">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Total Students</h4>
+            <p>{{ $studentCount }}</p>
+        </div>
+    </div>
+    <div class="stat-card wardens">
+        <div class="stat-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Total Wardens</h4>
+            <p>{{ $wardenCount }}</p>
+        </div>
+    </div>
+    <div class="stat-card hostels">
+        <div class="stat-icon">
+            <i class="fas fa-hotel"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Total Hostels</h4>
+            <p>{{ $hostelCount }}</p>
+        </div>
+    </div>
+    <div class="stat-card rooms">
+        <div class="stat-icon">
+            <i class="fas fa-door-open"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Available Rooms</h4>
+            <p>{{ $availableRoomsCount }}</p>
+        </div>
+    </div>
 </div>
 
 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
@@ -94,10 +128,102 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @push('styles')
 <style>
-    /* Main Stat Cards */
-    .stat-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .stat-card h4 { margin: 0 0 10px 0; color: #5a5c69; font-size: 1rem; }
-    .stat-card p { font-size: 2rem; font-weight: 700; margin: 0; color: #4e73df; }
+    :root {
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --card-radius: 12px;
+    --text-dark: #3a3b45;
+    --text-light: #858796;
+    }
+
+    /* The main grid container */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 25px;
+    }
+
+    /* Base style for all statistic cards */
+    .stat-card {
+        background-color: #ffffff;
+        padding: 20px; /* Reduced from 25px */
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Reduced space between icon and text */
+        border-left: 5px solid transparent;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* A subtle lift and shadow effect on hover */
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Styling for the icon's container */
+    .stat-icon {
+        font-size: 1.75rem; /* Reduced from 2rem */
+        width: 55px;      /* Reduced from 65px */
+        height: 55px;     /* Reduced from 65px */
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+    }
+
+    /* Text content styling */
+    .stat-info h4 {
+        margin: 0 0 5px 0;
+        color: var(--text-light);
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .stat-info p {
+        font-size: 1.8rem; /* Reduced from 2rem */
+        font-weight: 700;
+        margin: 0;
+        color: var(--text-dark);
+    }
+
+    /* --- Unique Color Variants --- */
+
+    /* Students Card */
+    .stat-card.students {
+        border-color: #4e73df;
+    }
+    .stat-card.students .stat-icon {
+        color: #4e73df;
+        background-color: #e6eafb;
+    }
+
+    /* Wardens Card */
+    .stat-card.wardens {
+        border-color: #f6c23e;
+    }
+    .stat-card.wardens .stat-icon {
+        color: #f6c23e;
+        background-color: #fff8e5;
+    }
+
+    /* Hostels Card */
+    .stat-card.hostels {
+        border-color: #1cc88a;
+    }
+    .stat-card.hostels .stat-icon {
+        color: #1cc88a;
+        background-color: #e2f7f0;
+    }
+
+    /* Rooms Card */
+    .stat-card.rooms {
+        border-color: #e74a3b;
+    }
+    .stat-card.rooms .stat-icon {
+        color: #e74a3b;
+        background-color: #fce8e6;
+    }
 
     /* Message Center Specific Styles */
     .message-center {
