@@ -138,10 +138,9 @@ document.addEventListener('DOMContentLoaded', function () {
     /* The main grid container */
     .stat-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(4, 1fr); /* This forces 4 columns in one line */
         gap: 25px;
-        max-width: 55%; 
-        margin-bottom: 25px; 
+        margin-bottom: 25px; /* Removed max-width to use available space */
     }
 
     /* Base style for all statistic cards */

@@ -15,14 +15,6 @@
     @forelse($hostels as $hostel)
         {{-- MODIFICATION: The entire card is still a link, but the internal structure is new --}}
         <a href="{{ route('warden.hostels.show', $hostel->id) }}" class="hostel-card">
-            <div class="card-image">
-                {{-- 
-                    NOTE: This is a placeholder image. 
-                    For a real application, you would add an 'image_path' to your 'hostels' table 
-                    and use a link like: <img src="{{ asset('storage/' . $hostel->image_path) }}" alt="{{ $hostel->name }}">
-                --}}
-                <img src="{{ asset('images/hostel.jpg') }}" alt="{{ $hostel->name }}">
-            </div>
             <div class="card-content">
                 <h3>{{ $hostel->name }}</h3>
                 <div class="card-stats">
