@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/login/check-credentials', [App\Http\Controllers\Auth\LoginController::class, 'checkCredentials'])->name('login.check');
 
 // NEW FORGOT PASSWORD ROUTES (for the modal workflow)
 Route::post('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
