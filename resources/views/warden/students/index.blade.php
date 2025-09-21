@@ -4,6 +4,7 @@
 @section('page-title', 'Manage Students')
 
 @section('content')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
     .filter-form {
         display: flex;
@@ -46,25 +47,60 @@
 
     /* Action Buttons Styles */
     .actions .btn {
-        padding: 0.3rem 0.7rem;
+        padding: 0.5rem 0.6rem; /* Adjusted padding for a more square look */
         font-size: 0.8rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border-radius: 5px;
         text-decoration: none;
         color: white;
         border: none;
         cursor: pointer;
         margin-right: 5px;
-        display: inline-block; /* Ensures proper alignment */
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease; /* Smooth transition for hover effect */
+    }
+
+    /* NEW: This class hides the text by default */
+    .btn-text {
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        white-space: nowrap; /* Prevents text from wrapping during transition */
+        padding-left: 0;
+    }
+
+    /* NEW: This makes the text appear when you hover over the button */
+    .actions .btn:hover .btn-text {
+        max-width: 100px; /* Needs to be wide enough for the text */
+        opacity: 1;
+        padding-left: 0.4rem; /* Adds a bit of space from the icon */
+    }
+    
+    .actions-column {
+        text-align: right;
     }
     .btn { padding: 10px 10px; border-radius: 5px; text-decoration: none; color: white; border: none; cursor: pointer; }
+    .btn-warning { background-color: #ffc107; }
+    .btn-danger { background-color: #dc3545; }
+    .btn-primary {
+        background-color: #4e73df;
+        padding: 10px 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9; /* Darker shade on hover */
+        transform: translateY(-2px); /* Lifts the button up slightly */
+        box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4); /* Stronger shadow */
+    }
+    .btn-secondary { background-color: #858796; color: white; text-decoration: none; }
     .btn-info { background-color: #36b9cc; } /* NEW: Teal for Details */
     .btn-info:hover { background-color: #2a96a5; }
     .btn-warning { background-color: #f6c23e; }
     .btn-warning:hover { background-color: #dda20a; }
     .btn-danger { background-color: #e74a3b; }
     .btn-danger:hover { background-color: #be2617; }
-    .btn-primary { background-color: #4e73df; }
-    .btn-secondary { background-color: #858796; color: white; text-decoration: none; }
 
     /* Pagination Styles */
     .pagination { justify-content: center; }
@@ -164,7 +200,7 @@
 
 <div class="top-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h2>Student List</h2>
-    <a href="{{ route('warden.students.create') }}" class="btn btn-primary" style="padding: 10px 15px; border-radius: 5px; text-decoration: none; color: white; background-color: #007bff;">Add New Student</a>
+    <a href="{{ route('warden.students.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Student</a>
 </div>
 
 @if(session('success'))
@@ -182,7 +218,7 @@
                 <th>Faculty</th>
                 <th>Batch</th>
                 <th>Room No</th>
-                <th>Actions</th>
+                <th class="actions-column">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -193,13 +229,31 @@
                 <td>{{ $student->faculty }}</td>
                 <td>{{ $student->batch }}</td>
                 <td>{{ $student->room->room_number ?? 'Not Assigned' }}</td>
-                <td class="actions">
-                    <a href="{{ route('warden.students.show', $student->id) }}" class="btn btn-info">Details</a>
-                    <a href="{{ route('warden.students.edit', $student->id) }}" class="btn btn-warning">Edit</a>
+                <!-- <td class="actions actions-column">
+                    <a href="{{ route('warden.students.show', $student->id) }}" class="btn btn-info"><i class="fas fa-eye"></i> Details</a>
+                    <a href="{{ route('warden.students.edit', $student->id) }}" class="btn btn-warning"><i class="fas fa-eye"></i> Details</a>
                     <form id="delete-form-{{ $student->id }}" action="{{ route('warden.students.destroy', $student->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $student->id }}">Delete</button>
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $student->id }}"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </form>
+                </td> -->
+                <td class="actions actions-column">
+                    <a href="{{ route('warden.students.show', $student->id) }}" class="btn btn-info">
+                        <i class="fas fa-eye"></i>
+                        <span class="btn-text">Details</span>
+                    </a>
+                    <a href="{{ route('warden.students.edit', $student->id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i>
+                        <span class="btn-text">Edit</span>
+                    </a>
+                    <form id="delete-form-{{ $student->id }}" action="{{ route('warden.students.destroy', $student->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $student->id }}">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="btn-text">Delete</span>
+                        </button>
                     </form>
                 </td>
             </tr>

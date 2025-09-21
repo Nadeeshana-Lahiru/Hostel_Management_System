@@ -47,8 +47,8 @@
 
     /* Action Buttons Styles */
     .actions .btn {
-        padding: 0.5rem 1rem; 
-        font-size: 0.85rem; 
+        padding: 0.5rem 0.6rem; /* Adjusted padding for a more square look */
+        font-size: 0.8rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border-radius: 5px;
         text-decoration: none;
@@ -56,8 +56,28 @@
         border: none;
         cursor: pointer;
         margin-right: 5px;
-        display: inline-block; /* Ensures proper alignment */
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease; /* Smooth transition for hover effect */
     }
+
+    /* NEW: This class hides the text by default */
+    .btn-text {
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        white-space: nowrap; /* Prevents text from wrapping during transition */
+        padding-left: 0;
+    }
+
+    /* NEW: This makes the text appear when you hover over the button */
+    .actions .btn:hover .btn-text {
+        max-width: 100px; /* Needs to be wide enough for the text */
+        opacity: 1;
+        padding-left: 0.4rem; /* Adds a bit of space from the icon */
+    }
+
     .actions-column {
         text-align: right;
     }
@@ -210,13 +230,31 @@
                 <td>{{ $student->faculty }}</td>
                 <td>{{ $student->batch }}</td>
                 <td>{{ $student->room->room_number ?? 'Not Assigned' }}</td>
-                <td class="actions actions-column">
+                <!-- <td class="actions actions-column">
                     <a href="{{ route('admin.students.show', $student->id) }}" class="btn btn-info"><i class="fas fa-eye"></i> Details</a>
-                    <a href="{{ route('admin.students.edit', $student->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="{{ route('admin.students.edit', $student->id) }}" class="btn btn-warning"><i class="fas fa-eye"></i> Details</a>
                     <form id="delete-form-{{ $student->id }}" action="{{ route('admin.students.destroy', $student->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $student->id }}"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </form>
+                </td> -->
+                <td class="actions actions-column">
+                    <a href="{{ route('admin.students.show', $student->id) }}" class="btn btn-info">
+                        <i class="fas fa-eye"></i>
+                        <span class="btn-text">Details</span>
+                    </a>
+                    <a href="{{ route('admin.students.edit', $student->id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i>
+                        <span class="btn-text">Edit</span>
+                    </a>
+                    <form id="delete-form-{{ $student->id }}" action="{{ route('admin.students.destroy', $student->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $student->id }}">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="btn-text">Delete</span>
+                        </button>
                     </form>
                 </td>
             </tr>
