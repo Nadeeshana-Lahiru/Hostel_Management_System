@@ -30,11 +30,10 @@
         text-align: center;
         text-decoration: none;
     }
-    .btn-submit { background-color: #1cc88a; color: white; } /* Green for update */
-    .btn-submit:hover { background-color: #17a673; }
-    
-    .btn-secondary { background-color: #6c757d; color: white; }
-    .btn-secondary:hover { background-color: #5a6268; }
+    .btn-submit { background-color: #4e73df; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);} 
+    .btn-submit:hover { background-color: #2e59d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4);  }
+    .btn-secondary { background-color: #858796; color: white; }
+    .btn-secondary:hover { background-color: #717384; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4); }
     .alert-danger { list-style-type: none; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; border-radius: 5px; margin-bottom: 20px; }
 </style>
 

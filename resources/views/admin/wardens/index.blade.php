@@ -7,24 +7,61 @@
 <style>
     .actions a, .actions button { margin-right: 5px; }
     .btn { padding: 10px 10px; border-radius: 5px; text-decoration: none; color: white; border: none; cursor: pointer; }
-    .btn-primary { background-color: #007bff; }
-    .btn-warning { background-color: #ffc107; }
-    .btn-danger { background-color: #dc3545; }
-    .table-container { overflow-x: auto; }
+    .table-container { 
+        background-color: #fff; 
+        padding: 1.5rem; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-    th { background-color: #f8f9fa; }
+    th, td { 
+        padding: 0.9rem; 
+        border-bottom: 1px solid #e3e6f0; 
+        text-align: left; 
+        vertical-align: middle;
+    }
+    thead th { 
+        background-color: #f8f9fc; 
+        font-weight: 600; 
+        color: #5a5c69;
+        border-top: 1px solid #e3e6f0;
+    }
+    tbody tr:hover { background-color: #f8f9fc; }
     .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
     .actions .btn {
-        padding: 0.3rem 0.7rem; font-size: 0.8rem; border-radius: 5px; text-decoration: none;
-        color: white; border: none; cursor: pointer; margin-right: 5px; display: inline-block;
+        padding: 0.5rem 1rem; 
+        font-size: 0.85rem; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 5px;
+        text-decoration: none;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5px;
+        display: inline-block; /* Ensures proper alignment */
     }
-    .btn-primary { background-color: #4e73df; }
+    .actions-column {
+        text-align: right;
+    }
+
+    .btn-primary {
+        background-color: #4e73df;
+        padding: 10px 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9; /* Darker shade on hover */
+        transform: translateY(-2px); /* Lifts the button up slightly */
+        box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4); /* Stronger shadow */
+    }
     .btn-secondary { background-color: #858796; color: white; text-decoration: none; }
     .btn-info { background-color: #36b9cc; } /* NEW: Teal for Details */
+    .btn-info:hover { background-color: #2a96a5; }
     .btn-warning { background-color: #f6c23e; }
+    .btn-warning:hover { background-color: #dda20a; }
     .btn-danger { background-color: #e74a3b; }
+    .btn-danger:hover { background-color: #be2617; }
 
     .modal {
         display: none; position: fixed; z-index: 1000; left: 0; top: 0;
@@ -100,7 +137,7 @@
 
 <div class="top-controls">
     <h2>All Wardens</h2>
-    <a href="{{ route('admin.wardens.create') }}" class="btn btn-primary">Add New Warden</a>
+    <a href="{{ route('admin.wardens.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Warden</a>
 </div>
 
 @if(session('success'))
@@ -117,7 +154,7 @@
                 <th>NIC</th>
                 <th>Email</th>
                 <th>Telephone</th>
-                <th>Actions</th>
+                <th class="actions-column">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -127,13 +164,13 @@
                 <td>{{ $warden->nic }}</td>
                 <td>{{ $warden->user->email ?? 'N/A' }}</td>
                 <td>{{ $warden->telephone_number }}</td>
-                <td class="actions">
-                    <a href="{{ route('admin.wardens.show', $warden->id) }}" class="btn btn-info">Details</a>
-                    <a href="{{ route('admin.wardens.edit', $warden->id) }}" class="btn btn-warning">Edit</a>
+                <td class="actions actions-column">
+                    <a href="{{ route('admin.wardens.show', $warden->id) }}" class="btn btn-info"><i class="fas fa-eye"></i> Details</a>
+                    <a href="{{ route('admin.wardens.edit', $warden->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
                     <form id="delete-form-{{ $warden->id }}" action="{{ route('admin.wardens.destroy', $warden->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $warden->id }}">Delete</button>
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $warden->id }}"><i class="fas fa-trash-alt"></i> Delete</button>
                     </form>
                 </td>
             </tr>
