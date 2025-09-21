@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 25px;
+        max-width: 55%; 
+        margin-bottom: 25px; 
     }
 
     /* Base style for all statistic cards */
