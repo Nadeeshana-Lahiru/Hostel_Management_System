@@ -3,12 +3,13 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+<div class="dashboard-grid">
     
-    <a href="{{ route('student.room.index') }}" class="dashboard-card">
+    {{-- MODIFICATION: Added a new class "details-card" to apply the color scheme --}}
+    <a href="{{ route('student.room.index') }}" class="dashboard-card details-card">
         <div class="card-header">
             <div class="icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 8.5 3 3L22 8l-3-3"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bed"><path d="M2 3v16h20V3a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"></path><path d="M2 12h20"></path><path d="M4 18v-6"></path><path d="M20 18v-6"></path></svg>
             </div>
             <h3>My Room Details</h3>
         </div>
@@ -37,63 +38,145 @@
 
 @push('styles')
 <style>
-    /* New Styles for the Dashboard Card */
+    /* Define consistent theme variables */
+    :root {
+        --primary-color: #4e73df;
+        --border-color: #e3e6f0;
+        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --card-radius: 12px;
+        --text-dark: #3a3b45;
+        --text-light: #5a5c69;
+    }
+
+    /* --- MODIFIED: Grid layout --- */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* Default to a single column for mobile */
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* On larger screens (laptops, etc.), create a two-column layout */
+    /* The 2nd column (message center) will be 1.5 times wider */
+    @media (min-width: 992px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr 1.5fr;
+        }
+    }
+
+    /* --- MODIFIED: Base style for the dashboard card --- */
     .dashboard-card {
         background-color: #ffffff;
-        border: 1px solid #e3e6f0;
-        border-radius: 8px;
+        border-radius: var(--card-radius);
         padding: 25px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
+        box-shadow: var(--card-shadow);
         text-decoration: none;
         color: inherit;
-        display: block;
-        width: 80%;
-        height: 50%;
-        margin-left: 10%;
-        margin-top: 10%;
+        display: flex;
+        flex-direction: column;
+        border-left: 5px solid; /* The color will be set by the variant class */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .dashboard-card:hover {
-        transform: scale(1.03); /* Gently zooms the card in */
+        transform: translateY(-5px);
         box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        border-left: 5px solid #4e73df;
     }
+
     .dashboard-card .card-header {
         display: flex;
         align-items: center;
         gap: 15px;
         margin-bottom: 15px;
     }
+
     .dashboard-card .icon-container {
-        background-color: #eaecf4;
         border-radius: 50%;
-        padding: 12px;
-        display: inline-flex;
+        width: 50px;
+        height: 50px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        color: #4e73df;
+        flex-shrink: 0;
     }
+
     .dashboard-card h3 {
         margin: 0;
         font-size: 1.25rem;
-        color: #4e73df;
+        color: var(--text-dark);
         font-weight: 600;
     }
+
     .dashboard-card p {
         margin: 0;
         font-size: 1rem;
-        color: #5a5c69;
+        color: var(--text-light);
+        line-height: 1.5;
     }
 
-    /* Styles for Message Center (copied from admin dashboard) */
-    .message-center { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .message-history { height: 300px; overflow-y: auto; border: 1px solid #e3e6f0; padding: 15px; margin-top: 15px; border-radius: 8px; }
-    .message-item { border-bottom: 1px solid #e3e6f0; padding-bottom: 10px; margin-bottom: 10px; }
-    .message-item:last-child { border-bottom: none; margin-bottom: 0; }
-    .message-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-    .message-header strong { color: #4e73df; }
-    .message-header small { color: #858796; font-size: 0.75rem; background-color: #f8f9fc; padding: 2px 6px; border-radius: 4px; }
-    .message-item p { margin: 0 0 5px 0; color: #5a5c69; }
-    .message-footer { font-size: 0.75rem; color: #b7b9cc; }
+    /* --- NEW: Color variant for the "My Room Details" card --- */
+    .dashboard-card.details-card {
+        border-color: var(--primary-color);
+    }
+    .dashboard-card.details-card .icon-container {
+        background-color: #eaecf4; /* Light blue background */
+        color: var(--primary-color); /* Dark blue icon */
+    }
+
+
+    /* --- REFINED: Styles for Message Center --- */
+    .message-center {
+        background: #fff;
+        padding: 20px;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+    }
+    .message-center h4 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .message-history {
+        max-height: 350px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .message-item {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+    .message-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 5px;
+    }
+    .message-header strong {
+        color: var(--primary-color);
+    }
+    .message-header small {
+        color: var(--text-light);
+        font-size: 0.75rem;
+        background-color: #f8f9fc;
+        padding: 2px 8px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+    .message-item p {
+        margin: 0 0 8px 0;
+        color: var(--text-light);
+    }
+    .message-footer {
+        font-size: 0.75rem;
+        color: #b7b9cc;
+    }
 </style>
 @endpush
