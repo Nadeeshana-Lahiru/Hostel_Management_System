@@ -135,44 +135,39 @@ document.addEventListener('DOMContentLoaded', function () {
     --text-light: #858796;
     }
 
-    /* The main grid container */
     .stat-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* This forces 4 columns in one line */
+        grid-template-columns: repeat(4, 1fr); 
         gap: 25px;
-        margin-bottom: 25px; /* Removed max-width to use available space */
+        margin-bottom: 25px; 
     }
 
-    /* Base style for all statistic cards */
     .stat-card {
         background-color: #ffffff;
-        padding: 20px; /* Reduced from 25px */
+        padding: 20px;
         border-radius: var(--card-radius);
         box-shadow: var(--card-shadow);
         display: flex;
         align-items: center;
-        gap: 15px; /* Reduced space between icon and text */
+        gap: 15px; 
         border-left: 5px solid transparent;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* A subtle lift and shadow effect on hover */
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
-    /* Styling for the icon's container */
     .stat-icon {
-        font-size: 1.75rem; /* Reduced from 2rem */
-        width: 55px;      /* Reduced from 65px */
-        height: 55px;     /* Reduced from 65px */
+        font-size: 1.75rem; 
+        width: 55px;    
+        height: 55px;   
         display: grid;
         place-items: center;
         border-radius: 50%;
     }
 
-    /* Text content styling */
     .stat-info h4 {
         margin: 0 0 5px 0;
         color: var(--text-light);
@@ -182,15 +177,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     .stat-info p {
-        font-size: 1.8rem; /* Reduced from 2rem */
+        font-size: 1.8rem;
         font-weight: 700;
         margin: 0;
         color: var(--text-dark);
     }
 
-    /* --- Unique Color Variants --- */
-
-    /* Students Card */
     .stat-card.students {
         border-color: #4e73df;
     }
@@ -199,7 +191,6 @@ document.addEventListener('DOMContentLoaded', function () {
         background-color: #e6eafb;
     }
 
-    /* Wardens Card */
     .stat-card.wardens {
         border-color: #f6c23e;
     }
@@ -208,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
         background-color: #fff8e5;
     }
 
-    /* Hostels Card */
     .stat-card.hostels {
         border-color: #1cc88a;
     }
@@ -217,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function () {
         background-color: #e2f7f0;
     }
 
-    /* Rooms Card */
     .stat-card.rooms {
         border-color: #e74a3b;
     }
@@ -226,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
         background-color: #fce8e6;
     }
 
-    /* Message Center Specific Styles */
     .message-center {
         background: #fff;
         padding: 20px;
