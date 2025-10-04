@@ -4,7 +4,48 @@
 @section('page-title', 'My Assigned Hostel')
 
 @section('content')
-{{-- Added Font Awesome for icons --}}
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 @if(session('success'))
@@ -13,7 +54,6 @@
 
 <div class="hostel-grid">
     @forelse($hostels as $hostel)
-        {{-- MODIFICATION: The entire card is still a link, but the internal structure is new --}}
         <a href="{{ route('warden.hostels.show', $hostel->id) }}" class="hostel-card">
             <div class="card-content">
                 <h3>{{ $hostel->name }}</h3>
@@ -29,7 +69,6 @@
             </div>
         </a>
     @empty
-        {{-- MODIFICATION: Improved styling for the empty state message --}}
         <div class="empty-state">
             <i class="fas fa-home"></i>
             <h3>No Hostel Assigned</h3>
@@ -41,15 +80,13 @@
 
 @push('styles')
 <style>
-    /* --- MODIFIED: Complete CSS Overhaul for a "Beautiful" Grid --- */
 
     body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased; /* Improves font rendering */
-        -moz-osx-font-smoothing: grayscale;  /* Improves font rendering */
-        background-color: #f8f9fc; /* A light background for the whole page */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;  
+        background-color: #f8f9fc;
     }
-    /* Define theme variables */
     :root {
         --primary-color: #4e73df;
         --primary-hover: #2e59d9;
@@ -71,9 +108,9 @@
         box-shadow: var(--card-shadow);
         text-decoration: none;
         color: inherit;
-        display: flex; /* Use flexbox for a flexible layout */
+        display: flex;
         flex-direction: column;
-        overflow: hidden; /* Important for keeping image corners rounded */
+        overflow: hidden; 
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -82,7 +119,6 @@
         box-shadow: var(--card-shadow-hover);
     }
 
-    /* Card Image styling */
     .card-image {
         height: 180px;
         overflow: hidden;
@@ -90,17 +126,16 @@
     .card-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Ensures the image covers the area without distortion */
+        object-fit: cover;
         transition: transform 0.4s ease;
     }
     .hostel-card:hover .card-image img {
-        transform: scale(1.05); /* Subtle zoom effect on hover */
+        transform: scale(1.05); 
     }
 
-    /* Card Content styling */
     .card-content {
         padding: 20px;
-        flex-grow: 1; /* Allows this section to grow, pushing the footer down */
+        flex-grow: 1;
     }
     .card-content h3 {
         margin-top: 0;
@@ -128,7 +163,6 @@
         text-align: center;
     }
 
-    /* Card Footer (Call to Action) */
     .card-footer {
         padding: 15px 20px;
         background-color: #f8f9fc;
@@ -150,9 +184,8 @@
         transform: translateX(5px);
     }
 
-    /* Styling for the empty state message */
     .empty-state {
-        grid-column: 1 / -1; /* Make it span the full grid width */
+        grid-column: 1 / -1; 
         text-align: center;
         padding: 4rem 2rem;
         background-color: #fff;
