@@ -3,9 +3,50 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <div class="dashboard-grid">
     
-    {{-- MODIFICATION: Added a new class "details-card" to apply the color scheme --}}
     <a href="{{ route('student.room.index') }}" class="dashboard-card details-card">
         <div class="card-header">
             <div class="icon-container">
@@ -38,7 +79,6 @@
 
 @push('styles')
 <style>
-    /* Define consistent theme variables */
     :root {
         --primary-color: #4e73df;
         --border-color: #e3e6f0;
@@ -48,23 +88,19 @@
         --text-light: #5a5c69;
     }
 
-    /* --- MODIFIED: Grid layout --- */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: 1fr; /* Default to a single column for mobile */
+        grid-template-columns: 1fr; 
         gap: 2rem;
         align-items: start;
     }
 
-    /* On larger screens (laptops, etc.), create a two-column layout */
-    /* The 2nd column (message center) will be 1.5 times wider */
     @media (min-width: 992px) {
         .dashboard-grid {
             grid-template-columns: 1fr 1.5fr;
         }
     }
 
-    /* --- MODIFIED: Base style for the dashboard card --- */
     .dashboard-card {
         background-color: #ffffff;
         border-radius: var(--card-radius);
@@ -74,7 +110,7 @@
         color: inherit;
         display: flex;
         flex-direction: column;
-        border-left: 5px solid; /* The color will be set by the variant class */
+        border-left: 5px solid; 
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -114,17 +150,14 @@
         line-height: 1.5;
     }
 
-    /* --- NEW: Color variant for the "My Room Details" card --- */
     .dashboard-card.details-card {
         border-color: var(--primary-color);
     }
     .dashboard-card.details-card .icon-container {
-        background-color: #eaecf4; /* Light blue background */
-        color: var(--primary-color); /* Dark blue icon */
+        background-color: #eaecf4; 
+        color: var(--primary-color); 
     }
 
-
-    /* --- REFINED: Styles for Message Center --- */
     .message-center {
         background: #fff;
         padding: 20px;
