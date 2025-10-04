@@ -3,15 +3,54 @@
 @section('page-title', 'Hostel Feedback Form')
 
 @section('content')
-<!-- === NEW, BEAUTIFUL STYLES FOR THE FEEDBACK PAGE === -->
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <style>
-    /* General Page Styling */
     .feedback-container {
         max-width: 850px;
         margin: auto;
     }
 
-    /* Polished alert messages */
     .alert {
         padding: 1rem;
         margin-bottom: 1.5rem;
@@ -25,7 +64,6 @@
         border-color: #a7f3d0;
     }
 
-    /* Main Form Card */
     .feedback-form-card {
         background-color: #fff;
         padding: 2.5rem;
@@ -34,7 +72,6 @@
         border: 1px solid #e3e6f0;
     }
     
-    /* Introduction text style */
     .feedback-intro {
         text-align: center; 
         color: #858796; 
@@ -43,7 +80,6 @@
         line-height: 1.6;
     }
 
-    /* Styling for each question's card */
     .feedback-question-card {
         background-color: #fdfdff;
         padding: 1.5rem 2rem;
@@ -59,7 +95,6 @@
         border-left-color: #4e73df;
     }
 
-    /* Question text style */
     .feedback-question-card h3 {
         margin-top: 0;
         margin-bottom: 1.5rem;
@@ -68,7 +103,6 @@
         font-size: 1.2rem;
     }
 
-    /* Interactive Rating Selection Group */
     .rating-group {
         display: flex;
         justify-content: space-around;
@@ -82,7 +116,7 @@
         text-align: center;
         transition: transform 0.2s ease, filter 0.2s ease;
         width: 120px;
-        filter: grayscale(50%); /* Slightly desaturated when not hovered/selected */
+        filter: grayscale(50%); 
     }
     .rating-group label:hover {
         transform: scale(1.1);
@@ -123,7 +157,6 @@
         transition: all 0.3s ease;
     }
     
-    /* Styling for the selected radio button */
     .rating-group input[type="radio"]:checked + .rating-icon { stroke: #4e73df; }
     .rating-group input[type="radio"]:checked ~ .rating-number { background-color: #4e73df; border-color: #4e73df; color: #fff; transform: scale(1.1); }
     .rating-group input[type="radio"]:checked ~ .rating-text { color: #4e73df; font-weight: 700; }
@@ -132,7 +165,6 @@
         filter: grayscale(0%);
     }
 
-    /* Beautifully styled buttons */
     .form-buttons {
         display: flex;
         gap: 1.5rem;
@@ -145,7 +177,7 @@
         padding: 0.85rem 1.5rem;
         font-size: 1rem;
         font-weight: 600;
-        border-radius: 50px; /* Pill-shaped buttons */
+        border-radius: 50px;
         cursor: pointer;
         text-align: center;
         text-decoration: none;
@@ -160,7 +192,6 @@
     .btn-submit { background: linear-gradient(45deg, #1cc88a, #13a26f); color: white; }
     .btn-secondary { background-color: #858796; color: white; }
     
-    /* Polished modal styles to match settings pages */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
     .modal-content { background-color: #fefefe; margin: 15% auto; padding: 30px; border: none; width: 90%; max-width: 450px; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: scale(0.95);} to {opacity: 1; transform: scale(1);} }
@@ -169,7 +200,6 @@
     .modal-buttons { display: flex; gap: 1rem; justify-content: center; }
     .modal-buttons .btn { flex-grow: 1; max-width: 140px; }
 </style>
-<!-- === END STYLES === -->
 
 <div class="feedback-container">
     <div class="feedback-form-card">
@@ -178,7 +208,6 @@
         <form action="{{ route('student.feedback.store') }}" method="POST" id="feedbackForm">
             @csrf
             @php
-                // This PHP block defines the content for each rating. It is unchanged.
                 $ratingsInfo = [
                     1 => ['text' => 'Very Unsatisfied', 'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M40,72 a30,30 0 0,1 48,0"/>'],
                     2 => ['text' => 'Unsatisfied',     'emoji' => '<circle cx="64" cy="64" r="56"/><circle cx="44" cy="48" r="8"/><circle cx="84" cy="48" r="8"/><path d="M44,76 a24,24 0 0,1 40,0"/>'],
@@ -225,7 +254,6 @@
     </div>
 </div>
 
-<!-- MODAL MARKUP UPDATED TO MATCH NEW STYLING -->
 <div id="updateModal" class="modal">
     <div class="modal-content">
         <h3>Confirm Update</h3>
@@ -239,7 +267,6 @@
 @endsection
 
 @push('scripts')
-<!-- The JavaScript logic remains the same as it is perfectly functional -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const updateBtn = document.getElementById('updateFeedbackBtn');
