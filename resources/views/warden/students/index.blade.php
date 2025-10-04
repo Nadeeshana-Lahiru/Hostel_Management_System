@@ -8,8 +8,8 @@
 <style>
     .filter-form {
         display: flex;
-        flex-wrap: wrap; /* Allows items to wrap on smaller screens */
-        align-items: flex-end; /* Aligns items to the bottom */
+        flex-wrap: wrap;
+        align-items: flex-end;
         gap: 20px;
         background-color: #f8f9fc;
         padding: 20px;
@@ -23,7 +23,6 @@
     .btn-filter { background-color: #4e73df; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
     .btn-clear { background-color: #858796; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; }
 
-        /* Table Styles */
     .table-container { 
         background-color: #fff; 
         padding: 1.5rem; 
@@ -45,9 +44,9 @@
     }
     tbody tr:hover { background-color: #f8f9fc; }
 
-    /* Action Buttons Styles */
+
     .actions .btn {
-        padding: 0.5rem 0.6rem; /* Adjusted padding for a more square look */
+        padding: 0.5rem 0.6rem; 
         font-size: 0.8rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border-radius: 5px;
@@ -58,24 +57,23 @@
         margin-right: 5px;
         display: inline-flex;
         align-items: center;
-        transition: all 0.3s ease; /* Smooth transition for hover effect */
+        transition: all 0.3s ease; 
     }
 
-    /* NEW: This class hides the text by default */
+
     .btn-text {
         max-width: 0;
         opacity: 0;
         overflow: hidden;
         transition: all 0.3s ease;
-        white-space: nowrap; /* Prevents text from wrapping during transition */
+        white-space: nowrap;
         padding-left: 0;
     }
 
-    /* NEW: This makes the text appear when you hover over the button */
     .actions .btn:hover .btn-text {
-        max-width: 100px; /* Needs to be wide enough for the text */
+        max-width: 100px; 
         opacity: 1;
-        padding-left: 0.4rem; /* Adds a bit of space from the icon */
+        padding-left: 0.4rem; 
     }
     
     .actions-column {
@@ -90,19 +88,18 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .btn-primary:hover {
-        background-color: #2e59d9; /* Darker shade on hover */
-        transform: translateY(-2px); /* Lifts the button up slightly */
-        box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4); /* Stronger shadow */
+        background-color: #2e59d9; 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4); 
     }
     .btn-secondary { background-color: #858796; color: white; text-decoration: none; }
-    .btn-info { background-color: #36b9cc; } /* NEW: Teal for Details */
+    .btn-info { background-color: #36b9cc; } 
     .btn-info:hover { background-color: #2a96a5; }
     .btn-warning { background-color: #f6c23e; }
     .btn-warning:hover { background-color: #dda20a; }
     .btn-danger { background-color: #e74a3b; }
     .btn-danger:hover { background-color: #be2617; }
 
-    /* Pagination Styles */
     .pagination { justify-content: center; }
 
     .modal {
@@ -122,7 +119,7 @@
     .modal-buttons .btn { flex-grow: 1; max-width: 120px; }
 
     .student-count-display {
-        margin-left: auto; /* Pushes this to the far right */
+        margin-left: auto; 
         text-align: right;
     }
     .student-count-display strong {
@@ -202,12 +199,6 @@
     <h2>Student List</h2>
     <a href="{{ route('warden.students.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Student</a>
 </div>
-
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
 
 <div class="table-container">
     <table>
