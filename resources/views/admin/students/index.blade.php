@@ -199,12 +199,6 @@
     <a href="{{ route('admin.students.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Student</a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
 <div class="table-container">
     <table>
         <thead>
