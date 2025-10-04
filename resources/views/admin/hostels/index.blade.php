@@ -4,13 +4,51 @@
 @section('page-title', 'Manage Hostels')
 
 @section('content')
-{{-- Added Font Awesome for icons, as seen in the reference file --}}
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
-    /* --- CSS styles adapted from the provided reference file --- */
-
-    /* Define theme variables for consistent styling */
     :root {
         --primary-color: #4e73df;
         --primary-hover: #2e59d9;
@@ -52,7 +90,7 @@
 
     .card-content {
         padding: 25px;
-        flex-grow: 1; /* Pushes the footer down */
+        flex-grow: 1; 
     }
 
     .card-content h3 {
@@ -108,9 +146,8 @@
         transform: translateX(5px);
     }
 
-    /* Styling for the empty state message */
     .empty-state {
-        grid-column: 1 / -1; /* Span the full grid width */
+        grid-column: 1 / -1; 
         text-align: center;
         padding: 4rem 2rem;
         background-color: #fff;
@@ -134,7 +171,7 @@
     .btn-add-new {
         display: inline-flex;
         align-items: center;
-        gap: 8px; /* Space between icon and text */
+        gap: 8px; 
         background-color: var(--primary-color);
         color: #fff;
         padding: 12px 20px;
@@ -168,7 +205,6 @@
 
 <div class="hostel-grid">
     @forelse($hostels as $hostel)
-        {{-- MODIFICATION: The card structure is updated to match the new CSS --}}
         <a href="{{ route('admin.hostels.show', $hostel->id) }}" class="hostel-card">
             <div class="card-content">
                 <h3>{{ $hostel->name }}</h3>
@@ -188,7 +224,6 @@
             </div>
         </a>
     @empty
-        {{-- MODIFICATION: Improved styling for the empty state message --}}
         <div class="empty-state">
             <i class="fas fa-hotel"></i>
             <h3>No Hostels Found</h3>

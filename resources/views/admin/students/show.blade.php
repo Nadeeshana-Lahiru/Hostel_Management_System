@@ -4,6 +4,7 @@
 @section('page-title', '')
 
 @section('content')
+
 <style>
     .details-container {
         max-width: 900px;
