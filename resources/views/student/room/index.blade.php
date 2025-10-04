@@ -1,6 +1,6 @@
 @extends('student.layout')
 @section('title', 'My Room')
-@section('page-title', 'Room Details') 
+@section('page-title', 'My Room') 
 
 @section('content')
 
