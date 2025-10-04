@@ -45,9 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @endpush
 
-<!-- === STYLES UPDATED WITH ADMIN/WARDEN MODAL STYLES === -->
 <style>
-    /* Main container and sidebar styles (unchanged) */
     .settings-container { display: flex; gap: 2rem; align-items: flex-start; }
     .profile-sidebar { flex: 0 0 280px; background-color: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; position: sticky; top: 20px; }
     .profile-picture { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1rem; object-fit: cover; border: 4px solid #e9f2ff; }
@@ -65,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
     #logoutBtn:hover { background-color: #ffebee; }
     .profile-sidebar-nav i { margin-right: 15px; width: 20px; text-align: center; font-size: 1rem; }
     
-    /* Main content styles (unchanged) */
     .settings-main-content { flex-grow: 1; }
     .settings-card { background-color: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     .settings-section h5 { font-size: 1.4rem; font-weight: 600; color: #333; margin-bottom: 1.5rem; display: flex; align-items: center; }
@@ -77,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
     .detail-value { color: #333; font-size: 1rem; }
     .full-width { grid-column: 1 / -1; }
 
-    /* --- NEW & UPDATED MODAL STYLES FROM ADMIN/WARDEN FILE --- */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
     .modal-content { background-color: #fefefe; margin: 10% auto; padding: 30px; border: none; width: 90%; max-width: 450px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s; }
     @keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
@@ -109,9 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
     #resend-otp:hover { text-decoration: underline; }
     #resend-otp.disabled { color: #858796; cursor: not-allowed; text-decoration: none; }
 </style>
-<!-- === END STYLES === -->
 
-<!-- HTML STRUCTURE (UNCHANGED) -->
 <div class="settings-container">
     <aside class="profile-sidebar">
         <img src="https://placehold.co/120x120/EBF2FF/333333?text={{ substr($student->full_name ?? 'S', 0, 1) }}" alt="Profile Picture" class="profile-picture">
@@ -163,10 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-<!-- === END HTML STRUCTURE === -->
 
-
-<!-- === NEW MODAL HTML FROM ADMIN/WARDEN FILE === -->
 <div id="passwordModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -202,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <div id="step-password" class="modal-step">
             <p>OTP verified! Set a new, strong password.</p>
-            <!-- IMPORTANT: The action route is pointed to the STUDENT's change password route -->
             <form id="resetPasswordForm" action="{{ route('student.settings.changePassword') }}" method="POST">
                 @csrf
                 <div class="form-group password-group">
@@ -251,10 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
 @endsection
 
 @push('scripts')
-<!-- === NEW JAVASCRIPT FROM ADMIN/WARDEN FILE (WITH STUDENT ROUTES) === -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // --- SCRIPT FOR PASSWORD CHANGE MODAL ---
     const modal = document.getElementById('passwordModal');
     const openBtn = document.getElementById('changePasswordBtn');
     const closeBtns = document.querySelectorAll('.close-button');
@@ -321,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if(sendOtpForm) sendOtpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         showMessage('success', 'Sending...');
-        // IMPORTANT: Using STUDENT route
         fetch('{{ route("student.settings.sendOtp") }}', {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
@@ -345,7 +332,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if(verifyOtpForm) verifyOtpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         showMessage('success', 'Verifying...');
-        // IMPORTANT: Using STUDENT route
         fetch('{{ route("student.settings.verifyOtp") }}', {
             method: 'POST',
             body: new FormData(this),
@@ -360,7 +346,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if(resetPasswordForm) resetPasswordForm.addEventListener('submit', function(e) {
         e.preventDefault();
         showMessage('success', 'Processing...');
-        // IMPORTANT: Using STUDENT route (already correct in the HTML action)
         fetch(this.action, {
             method: 'POST',
             body: new FormData(this),
@@ -380,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.reload();
     });
 
-    // --- SCRIPT FOR LOGOUT CONFIRMATION ---
     const logoutModal = document.getElementById('logoutConfirmModal');
     const logoutBtn = document.getElementById('logoutBtn');
     const logoutForm = document.getElementById('logoutForm');
