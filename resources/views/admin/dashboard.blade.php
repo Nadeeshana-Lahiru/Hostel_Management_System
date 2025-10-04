@@ -5,8 +5,6 @@
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-{{-- File: resources/views/admin/dashboard.blade.php --}}
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
