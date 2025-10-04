@@ -1,11 +1,52 @@
 @extends('warden.layout')
 
 @section('title', 'Room Allocation')
-@section('page-title', '') {{-- The title will be inside the content for better styling --}}
+@section('page-title', '') 
 
 @section('content')
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <style>
-    /* Page Header */
     .page-header {
         margin-bottom: 20px;
     }
@@ -15,15 +56,12 @@
         color: #333;
     }
 
-    /* Grid Layout for Hostel Cards */
     .hostel-grid {
         display: grid;
-        /* Creates responsive columns that are at least 280px wide */
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 25px; /* Space between cards */
+        gap: 25px;
     }
 
-    /* Individual Hostel Card Styling */
     .hostel-card {
         background-color: #ffffff;
         border: 1px solid #e3e6f0;
@@ -34,7 +72,7 @@
         text-decoration: none;
         color: inherit;
         display: flex;
-        flex-direction: column; /* Align content vertically */
+        flex-direction: column; 
         justify-content: space-between;
     }
     .hostel-card:hover {
@@ -67,7 +105,7 @@
         font-size: 1rem;
         color: #5a5c69;
         font-weight: 500;
-        text-align: right; /* Align room count to the right */
+        text-align: right;
     }
     .no-hostels-message {
         background-color: #fff;
@@ -87,7 +125,6 @@
         <a href="{{ route('warden.allocations.showHostelRooms', $hostel->id) }}" class="hostel-card">
             <div class="hostel-card-header">
                 <div class="icon">
-                    {{-- Simple SVG building icon --}}
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4e73df" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </div>
                 <h3>{{ $hostel->name }}</h3>
