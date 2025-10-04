@@ -1,11 +1,52 @@
 @extends('student.layout')
 
 @section('title', 'My Complaints')
-@section('page-title', '') {{-- The title is now inside the content --}}
+@section('page-title', 'My Complaints') 
 
 @section('content')
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <style>
-    /* Page Header */
     .page-header {
         display: flex;
         justify-content: space-between;
@@ -36,13 +77,12 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    /* Complaint Card Styles */
     .complaint-card {
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         margin-bottom: 1.5rem;
-        border-left: 5px solid #e3e6f0; /* Default border color */
+        border-left: 5px solid #e3e6f0; 
     }
     .complaint-header {
         padding: 1rem 1.5rem;
@@ -69,8 +109,7 @@
     .status-badge.status-pending { background-color: #f6c23e; }
     .status-badge.status-in_progress { background-color: #36b9cc; }
     .status-badge.status-completed { background-color: #1cc88a; }
-    
-    /* Change card border color based on status */
+
     .complaint-card.status-pending { border-left-color: #f6c23e; }
     .complaint-card.status-in_progress { border-left-color: #36b9cc; }
     .complaint-card.status-completed { border-left-color: #1cc88a; }
