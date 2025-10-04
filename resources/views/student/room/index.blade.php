@@ -1,10 +1,51 @@
 @extends('student.layout')
 @section('title', 'My Room')
-@section('page-title', '') {{-- The title is now inside the content --}}
+@section('page-title', 'Room Details') 
 
 @section('content')
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+});
+</script>
+@endpush
+
 <style>
-    /* Page Header */
     .page-header {
         margin-bottom: 20px;
     }
@@ -14,7 +55,6 @@
         color: #333;
     }
 
-    /* Table Styles (Copied from admin panel for consistency) */
     .table-container { 
         background-color: #fff; 
         padding: 1.5rem; 
@@ -36,19 +76,17 @@
     }
     tbody tr:hover { background-color: #f8f9fc; }
 
-    /* NEW STYLES FOR THE STUDENT NAME LINK */
     .student-name-link {
         font-weight: 600;
-        color: #4e73df; /* Main theme color */
-        text-decoration: none; /* Removes the underline */
-        transition: color 0.2s ease-in-out; /* Smooth color change on hover */
+        color: #4e73df; 
+        text-decoration: none; 
+        transition: color 0.2s ease-in-out; 
     }
     .student-name-link:hover {
-        color: #2e59d9; /* Darker shade on hover */
-        text-decoration: underline; /* Adds underline ONLY on hover */
+        color: #2e59d9; 
+        text-decoration: underline;
     }
 
-    /* NEW STYLES */
     .fieldset-modern { border: 1px solid #e3e6f0; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .legend-modern { font-weight: 600; font-size: 1.2rem; color: #4e73df; padding: 0 10px; }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
@@ -63,7 +101,7 @@
 
     .results-container {
         margin-top: 40px;
-        max-width: 90%; /* Prevents it from touching the far left edge */
+        max-width: 90%; 
         margin-left: auto;
         margin-right: auto;
     }
@@ -120,7 +158,6 @@
 </style>
 
 @php
-    // This array translates the floor number from the database (0, 1, etc.) into a readable name.
     $floorNames = [
         0 => 'Ground Floor',
         1 => 'First Floor',
@@ -146,7 +183,6 @@
                 </tr>
             </thead>
             <tbody>
-                {{-- Your own details --}}
                 <tr>
                     <td>
                         <a href="{{ route('student.room.showRoommate', $student->id) }}" class="student-name-link">
@@ -158,7 +194,7 @@
                     <td>{{ $student->batch }}</td>
                 </tr>
 
-                {{-- Your roommates' details --}}
+
                 @forelse($roommates as $roommate)
                     <tr>
                         <td>
