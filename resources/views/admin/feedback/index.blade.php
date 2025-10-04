@@ -16,12 +16,11 @@
         font-size: 1.75rem;
         color: #333;
     }
-    
-    /* === Updated Button Style === */
+
     .page-header .btn-primary {
         display: inline-flex;
         align-items: center;
-        gap: 8px; /* Space between icon and text */
+        gap: 8px; 
         background: linear-gradient(45deg, #4e73df, #224abe);
         color: #fff;
         border: none;
@@ -38,7 +37,6 @@
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
         background: linear-gradient(45deg, #5a7fef, #2f56d0);
     }
-    /* === End Updated Button Style === */
 
     .chart-card {
         background-color: #fff;
@@ -55,7 +53,6 @@
 
 <div class="page-header">
     <h2>Feedback Report</h2>
-    {{-- Updated Button HTML with Icon --}}
     <a href="{{ route('admin.feedback.questions') }}" class="btn btn-primary">
         <i class="fas fa-cog"></i>
         Manage Questions
