@@ -4,6 +4,7 @@
 @section('page-title', 'Manage Wardens')
 
 @section('content')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
     .actions a, .actions button { margin-right: 5px; }
     .btn { padding: 10px 10px; border-radius: 5px; text-decoration: none; color: white; border: none; cursor: pointer; }
@@ -30,8 +31,8 @@
     .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
     .actions .btn {
-        padding: 0.5rem 1rem; 
-        font-size: 0.85rem; 
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border-radius: 5px;
         text-decoration: none;
@@ -39,8 +40,26 @@
         border: none;
         cursor: pointer;
         margin-right: 5px;
-        display: inline-block; 
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease; 
     }
+
+    .btn-text {
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        padding-left: 0;
+    }
+
+    .actions .btn:hover .btn-text {
+        max-width: 100px; 
+        opacity: 1;
+        padding-left: 0.4rem;
+    }
+
     .actions-column {
         text-align: right;
     }
@@ -156,13 +175,32 @@
                 <td>{{ $warden->nic }}</td>
                 <td>{{ $warden->user->email ?? 'N/A' }}</td>
                 <td>{{ $warden->telephone_number }}</td>
-                <td class="actions actions-column">
+                
+                <!-- <td class="actions actions-column">
                     <a href="{{ route('admin.wardens.show', $warden->id) }}" class="btn btn-info"><i class="fas fa-eye"></i> Details</a>
                     <a href="{{ route('admin.wardens.edit', $warden->id) }}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
                     <form id="delete-form-{{ $warden->id }}" action="{{ route('admin.wardens.destroy', $warden->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $warden->id }}"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </form>
+                </td> -->
+                <td class="actions actions-column">
+                    <a href="{{ route('admin.wardens.show', $warden->id) }}" class="btn btn-info">
+                        <i class="fas fa-eye"></i>
+                        <span class="btn-text">Details</span>
+                    </a>
+                    <a href="{{ route('admin.wardens.edit', $warden->id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i>
+                        <span class="btn-text">Edit</span>
+                    </a>
+                    <form id="delete-form-{{ $warden->id }}" action="{{ route('admin.wardens.destroy', $warden->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $warden->id }}">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="btn-text">Delete</span>
+                        </button>
                     </form>
                 </td>
             </tr>
