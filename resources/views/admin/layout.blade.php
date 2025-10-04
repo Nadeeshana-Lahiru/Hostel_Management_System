@@ -128,8 +128,23 @@
 
         <div class="content">
             <header class="header">
-                <div class="header-left">
+                <div class="header-left" style="display: flex; align-items: center; flex-grow: 1;">
+        
                     @yield('page-title')
+                    
+                    <div id="datetime-container" style="display: flex; align-items: center; gap: 15px; margin-left: auto; font-size: 0.9rem; color: #5a5c69;">
+                        
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="far fa-calendar-alt"></i>
+                            <span id="date-text"></span>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; background-color: #f1f3f5; padding: 4px 12px; border-radius: 20px;">
+                            <i class="far fa-clock"></i>
+                            <span id="time-text"></span>
+                        </div>
+                    </div>
+
                 </div>
             </header>
             
