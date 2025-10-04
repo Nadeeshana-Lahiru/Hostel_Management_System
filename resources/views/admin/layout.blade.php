@@ -5,31 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - @yield('title')</title>
 
-    <!-- === NEW - Font Awesome CDN for icons === -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- === END NEW === -->
 
     <style>
-        /* === MODIFIED - General body and font styles === */
         body { 
-            font-family: 'Poppins', 'Segoe UI', sans-serif; /* Using a more modern font */
+            font-family: 'Poppins', 'Segoe UI', sans-serif; 
             margin: 0; 
-            background-color: #f4f7fc; /* A lighter, softer background color */
+            background-color: #f4f7fc;
         }
         .wrapper { 
             display: flex; 
         }
-        /* === END MODIFIED === */
 
-
-        /* === NEW STYLES FOR THE SIDEBAR - Inspired by your example === */
         .sidebar {
             width: 260px;
-            background-color: #ffffff; /* Changed to white background */
+            background-color: #ffffff; 
             color: #333;
             min-height: 100vh;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Soft shadow for depth */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             border-right: 1px solid #e0e0e0;
         }
         .sidebar-header {
@@ -40,7 +34,7 @@
         }
         .sidebar-header h3 {
             margin: 0;
-            color: #0d6efd; /* Blue color for the header text */
+            color: #0d6efd; 
             font-weight: 600;
             font-size: 1.5rem;
         }
@@ -50,50 +44,46 @@
             margin: 0;
         }
         .sidebar ul li a {
-            display: flex; /* Using flexbox to align icon and text */
+            display: flex; 
             align-items: center;
             padding: 13px 25px;
-            margin: 8px 15px; /* Spacing between menu items */
+            margin: 8px 15px; 
             color: #5b6e88;
             text-decoration: none;
-            transition: all 0.3s ease; /* Smooth transition for hover and active states */
-            border-radius: 8px; /* Rounded corners for menu items */
+            transition: all 0.3s ease; 
+            border-radius: 8px; 
             font-weight: 500;
         }
         .sidebar ul li a .nav-icon {
             margin-right: 15px;
             font-size: 18px;
-            width: 20px; /* Fixed width for icon alignment */
+            width: 20px; 
             text-align: center;
-            color: #8a99af; /* A slightly muted icon color */
+            color: #8a99af; 
             transition: color 0.3s ease;
         }
         .sidebar ul li a:hover {
-            background-color: #e9f2ff; /* Light blue background on hover */
-            color: #0d6efd; /* Blue text on hover */
+            background-color: #e9f2ff; 
+            color: #0d6efd; 
         }
         .sidebar ul li a:hover .nav-icon {
-            color: #0d6efd; /* Blue icon on hover */
+            color: #0d6efd;
         }
         .sidebar ul li.active > a {
-            background-color: #0d6efd; /* Solid blue background for active link */
+            background-color: #0d6efd; 
             color: white;
-            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); /* Shadow for active link */
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); 
         }
         .sidebar ul li.active > a .nav-icon {
-            color: white; /* White icon for active link */
+            color: white; 
         }
-        /* === END OF NEW SIDEBAR STYLES === */
 
-
-        /* Unchanged styles for the main content area */
         .content { width: 100%; padding: 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .header-left { font-size: 1.5rem; color: #333; font-weight: 600; }
         .header-right .logout-form button { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
         .main-content { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        /* Styles for alert messages */
         .alert { padding: 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; position: relative; }
         .alert-success { color: #0f5132; background-color: #d1e7dd; border-color: #badbcc; }
         .alert-danger { color: #842029; background-color: #f8d7da; border-color: #f5c2c7; }
@@ -108,7 +98,6 @@
                 <h3>Admin Panel</h3>
             </div>
             
-            <!-- === MODIFIED - Added icons to each navigation link === -->
             <ul>
                 <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <a href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a>
@@ -135,7 +124,6 @@
                     <a href="{{ route('admin.settings.index') }}"><i class="fas fa-cog nav-icon"></i> Settings</a>
                 </li>
             </ul>
-             <!-- === END MODIFIED === -->
         </nav>
 
         <div class="content">
