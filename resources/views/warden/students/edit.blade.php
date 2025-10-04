@@ -129,11 +129,10 @@
         </div>
     @endif
 
-    <form action="{{ route('warden.students.update', $student->id) }}" method="POST">
+    <form id="editStudentForm" action="{{ route('warden.students.update', $student->id) }}" method="POST">
         @csrf
         @method('PUT')
         
-        <!-- Personal Information -->
         <fieldset>
             <legend>Personal Information</legend>
             <div class="form-grid">
@@ -175,7 +174,6 @@
             </div>
         </fieldset>
 
-        <!-- Educational Information -->
         <fieldset>
             <legend>Educational Information</legend>
             <div class="form-grid">
@@ -188,7 +186,6 @@
             </div>
         </fieldset>
 
-        <!-- Parent / Guardian Information -->
         <fieldset>
             <legend>Parent / Guardian Information</legend>
             <div class="form-grid">
@@ -202,17 +199,27 @@
             </div>
         </fieldset>
 
-        <!-- Medical Information -->
         <fieldset>
             <legend>Medical Information</legend>
             <div class="form-group full-width"><label for="medical_info">Long-term Medical Treatments (if any)</label><textarea name="medical_info" rows="3">{{ old('medical_info', $student->medical_info) }}</textarea></div>
         </fieldset>
         
         <div class="form-buttons">
-            <button type="submit" class="btn btn-submit">Update Details</button>
+            <button type="button" id="updateBtn" class="btn btn-submit">Update Details</button>
             <a href="{{ route('warden.students.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
+</div>
+
+<div id="confirmModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center;">
+        <h4 style="margin-top: 0;">Confirm Update</h4>
+        <p>Are you sure you want to make these changes?</p>
+        <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+            <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+            <button type="button" id="confirmBtn" class="btn btn-submit">Yes, Update</button>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -278,6 +285,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add event listener for any future changes
     provinceSelect.addEventListener('change', updateDistricts);
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const editForm = document.getElementById('editStudentForm');
+    const updateBtn = document.getElementById('updateBtn');
+    const confirmModal = document.getElementById('confirmModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+
+    updateBtn.addEventListener('click', function () {
+        confirmModal.style.display = 'block';
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        confirmModal.style.display = 'none';
+    });
+
+    confirmBtn.addEventListener('click', function () {
+        editForm.submit();
+    });
 });
 </script>
 @endpush
