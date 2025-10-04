@@ -5,7 +5,6 @@
 
 @section('content')
 <style>
-    /* Modern Filter Tabs */
     .filter-tabs {
         margin-bottom: 20px;
         background-color: #fff;
@@ -38,7 +37,6 @@
         margin-right: 0;
     }
 
-    /* Table Container */
     .table-container {
         background-color: #fff;
         padding: 1.5rem;
@@ -65,7 +63,6 @@
         background-color: #f8f9fc;
     }
 
-    /* Status Badges */
     .status-badge {
         padding: 0.3em 0.7em;
         font-size: 0.75em;
@@ -79,7 +76,6 @@
     .status-in_progress { background-color: #36b9cc; } /* Teal */
     .status-completed { background-color: #1cc88a; } /* Green */
 
-    /* Action Buttons */
     .actions .btn {
         padding: 0.4rem 0.8rem;
         font-size: 0.8rem;
@@ -108,8 +104,6 @@
     <table>
         <thead>
             <tr>
-                <!-- <th>Student Name</th>
-                <th>Reg No</th> -->
                 <th>Complaint Type</th>
                 <th>Submitted On</th>
                 <th>Status</th>
@@ -119,8 +113,6 @@
         <tbody>
             @forelse($complaints as $complaint)
             <tr>
-                <!-- <td>{{ $complaint->student->full_name ?? 'N/A' }}</td>
-                <td><strong>{{ $complaint->student->reg_no ?? 'N/A' }}</strong></td> -->
                 <td>{{ $complaint->type }}</td>
                 <td>{{ $complaint->created_at->format('Y-m-d H:i') }}</td>
                 <td>

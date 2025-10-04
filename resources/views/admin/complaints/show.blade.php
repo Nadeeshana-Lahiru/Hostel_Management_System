@@ -1,12 +1,11 @@
 @extends('admin.layout')
 
 @section('title', 'Complaint Details')
-{{-- This fixes the issue with the complaint ID not displaying correctly --}}
 @section('page-title', 'Complaint No ' . $complaint->id)
 
 @section('content')
 <style>
-    /* All the beautiful styles from the warden's page are now here */
+
     .page-container { max-width: 1100px; margin: auto; }
     .page-actions { margin-bottom: 25px; }
     .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
