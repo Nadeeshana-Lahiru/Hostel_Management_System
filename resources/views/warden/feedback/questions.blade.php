@@ -5,20 +5,16 @@
 
 @section('content')
 <style>
-    /* Page Header */
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .page-header h2 { margin: 0; font-size: 1.75rem; color: #333; }
 
-    /* Alert Messages */
     .alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; border: 1px solid transparent; font-weight: 500; }
     .alert-success { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
     .alert-danger { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
 
-    /* Modern Fieldset */
     .fieldset-modern { border: 1px solid #e3e6f0; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .legend-modern { font-weight: 600; font-size: 1.2rem; color: #4e73df; padding: 0 10px; width: auto; }
 
-    /* Form Styles */
     .form-group label { font-weight: 600; margin-bottom: 0.5rem; color: #5a5c69; display: block; }
     .form-group input[type="text"] {
         width: 100%; padding: 0.75rem; border-radius: 5px; border: 1px solid #d1d3e2;
@@ -28,36 +24,72 @@
         outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.25);
     }
     
-    /* General Button Styles */
     .btn {
-        display: inline-flex; align-items: center; gap: 6px; /* For icon alignment */
-        padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 6px; 
+        padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: normal;
         border-radius: 5px; text-decoration: none; color: white;
-        border: none; cursor: pointer; transition: all 0.3s ease;
+        border: none; cursor: pointer; transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-    .btn i { font-size: 0.9em; } /* Icon size relative to button text */
+    .btn i { font-size: 0.9em; }
 
-    /* Specific Button Colors & Gradients */
-    .btn-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
-    .btn-primary:hover { background: linear-gradient(45deg, #5a7fef, #2f56d0); }
+    .btn-primary,
+    .btn-submit { 
+        background-color: #4e73df;
+    }
+    .btn-primary:hover,
+    .btn-submit:hover {
+        background-color: #2e59d9;
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+    }
+    .btn-warning {
+        background-color: #f6c23e;
+    }
+    .btn-warning:hover {
+        background-color: #dda20a;
+    }
 
-    .btn-submit { background: linear-gradient(45deg, #1cc88a, #13855c); }
-    .btn-submit:hover { background: linear-gradient(45deg, #2ce09e, #18a474); }
+    .btn-danger {
+        background-color: #e74a3b;
+    }
+    .btn-danger:hover {
+        background-color: #be2617;
+    }
+    
+    .btn-secondary {
+        background-color: #858796;
+    }
+    .btn-secondary:hover {
+        background-color: #717384;
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+    }
 
-    .btn-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
-    .btn-warning:hover { background: linear-gradient(45deg, #f8d264, #eeb82a); }
+    .question-actions .btn {
+        padding: 0.5rem 0.6rem;
+    }
+    .btn-text {
+        color: white; 
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        padding-left: 0;
+    }
+    .question-actions .btn:hover .btn-text {
+        color: white; 
+        max-width: 100px;
+        opacity: 1;
+        padding-left: 0.4rem;
+    }
 
-    .btn-danger { background: linear-gradient(45deg, #e74a3b, #b92c1e); }
-    .btn-danger:hover { background: linear-gradient(45deg, #ed6a5e, #c73a2d); }
-
-    /* Question List */
     .question-list-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #e3e6f0; }
     .question-list-item:last-child { border-bottom: none; }
     .question-list-item span { color: #5a5c69; font-size: 1rem; }
     .question-actions { display: flex; gap: 10px; }
 
-    /* Modal Styles */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
     .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #e3e6f0; }
@@ -71,7 +103,6 @@
     <a href="{{ route('warden.feedback.index') }}" class="btn btn-primary"><i class="fas fa-chart-bar"></i> View Analytics Report</a>
 </div>
 
-<!-- @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif -->
 @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
 @if($errors->any())<div class="alert alert-danger"><strong>Please correct the errors:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 
@@ -94,11 +125,17 @@
             <li class="question-list-item">
                 <span>{{ $loop->iteration }}. {{ $question->question_text }}</span>
                 <div class="question-actions">
-                    <button class="btn btn-warning edit-btn" data-id="{{ $question->id }}" data-text="{{ $question->question_text }}"><i class="fas fa-edit"></i> Edit</button>
-                    <form action="{{ route('warden.feedback.destroyQuestion', $question->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this question?');">
+                    <button class="btn btn-warning edit-btn" data-id="{{ $question->id }}" data-text="{{ $question->question_text }}">
+                        <i class="fas fa-edit"></i>
+                        <span class="btn-text">Edit</span>
+                    </button>
+                    <form id="delete-form-{{ $question->id }}" action="{{ route('warden.feedback.destroyQuestion', $question->id) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $question->id }}">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="btn-text">Delete</span>
+                        </button>
                     </form>
                 </div>
             </li>
@@ -108,7 +145,6 @@
     </ul>
 </fieldset>
 
-{{-- Edit Question Modal --}}
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -122,36 +158,117 @@
                 <label for="edit_question_text">Question Text</label>
                 <input type="text" name="question_text" id="edit_question_text" required>
             </div>
-            <button type="submit" class="btn btn-submit" style="margin-top: 15px;"><i class="fas fa-save"></i> Save Changes</button>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="save-changes-btn" class="btn btn-submit"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
         </form>
+    </div>
+</div>
+
+<div id="confirmSaveModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Changes</h3>
+        </div>
+        <p style="margin-top: 1rem; margin-bottom: 2rem;">Do you need to make this change?</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button id="cancel-save-btn" class="btn btn-secondary">Cancel</button>
+            <button id="confirm-save-btn" class="btn btn-submit">Yes, Save</button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteConfirmModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Deletion</h3>
+        </div>
+        <p style="margin-top: 1rem; margin-bottom: 2rem;">Do you need to delete this record?</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button id="cancel-delete-btn" class="btn btn-secondary">Cancel</button>
+            <button id="confirm-delete-btn" class="btn btn-danger">Yes, Delete</button>
+        </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const modal = document.getElementById('editModal');
-    const closeBtn = document.querySelector('.close-button');
+    const editModal = document.getElementById('editModal');
+    const confirmSaveModal = document.getElementById('confirmSaveModal');
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+
     const editForm = document.getElementById('editForm');
     const editInput = document.getElementById('edit_question_text');
-    const editBtns = document.querySelectorAll('.edit-btn');
+    
+    const openEditBtns = document.querySelectorAll('.edit-btn');
+    const closeEditModalBtn = editModal.querySelector('.close-button');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const saveChangesBtn = document.getElementById('save-changes-btn');
+    const cancelSaveBtn = document.getElementById('cancel-save-btn');
+    const confirmSaveBtn = document.getElementById('confirm-save-btn');
 
-    editBtns.forEach(button => {
+    openEditBtns.forEach(button => {
         button.addEventListener('click', function () {
             const questionId = this.dataset.id;
             const questionText = this.dataset.text;
             
             editForm.action = `/warden/feedback/questions/${questionId}`;
             editInput.value = questionText;
-            modal.style.display = 'block';
+            
+            editModal.style.display = 'block';
         });
     });
 
-    closeBtn.onclick = function() { modal.style.display = 'none'; }
+    const closeEditModal = () => { editModal.style.display = 'none'; };
+    closeEditModalBtn.onclick = closeEditModal;
+    cancelEditBtn.onclick = closeEditModal;
+
+    saveChangesBtn.addEventListener('click', function() {
+        editModal.style.display = 'none';
+        confirmSaveModal.style.display = 'block';
+    });
+    
+    const closeConfirmModal = () => { confirmSaveModal.style.display = 'none'; };
+    cancelSaveBtn.onclick = closeConfirmModal;
+
+    confirmSaveBtn.addEventListener('click', function() {
+        editForm.submit();
+    });
+
     window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = 'none';
+        if (event.target == editModal) {
+            closeEditModal();
+        }
+        if (event.target == confirmSaveModal) {
+            closeConfirmModal();
         }
     }
+
+    const openDeleteBtns = document.querySelectorAll('.delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    let formToDelete = null;
+
+    openDeleteBtns.forEach(button => {
+        button.addEventListener('click', function() {
+            const formId = this.dataset.formId;
+            formToDelete = document.getElementById(`delete-form-${formId}`);
+            deleteConfirmModal.style.display = 'block';
+        });
+    });
+
+    const closeDeleteModal = () => {
+        deleteConfirmModal.style.display = 'none';
+        formToDelete = null;
+    };
+    cancelDeleteBtn.onclick = closeDeleteModal;
+
+    confirmDeleteBtn.addEventListener('click', function() {
+        if (formToDelete) {
+            formToDelete.submit();
+        }
+    });
 });
 </script>
 @endsection

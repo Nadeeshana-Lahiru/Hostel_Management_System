@@ -130,10 +130,10 @@
                         <i class="fas fa-edit"></i>
                         <span class="btn-text">Edit</span>
                     </button>
-                    <form action="{{ route('admin.feedback.destroyQuestion', $question->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this question?');" style="display: inline;">
+                    <form id="delete-form-{{ $question->id }}" action="{{ route('admin.feedback.destroyQuestion', $question->id) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger delete-btn" data-form-id="{{ $question->id }}">
                             <i class="fas fa-trash-alt"></i>
                             <span class="btn-text">Delete</span>
                         </button>
@@ -180,11 +180,25 @@
     </div>
 </div>
 
+<div id="deleteConfirmModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Deletion</h3>
+        </div>
+        <p style="margin-top: 1rem; margin-bottom: 2rem;">Do you need to delete this record?</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button id="cancel-delete-btn" class="btn btn-secondary">Cancel</button>
+            <button id="confirm-delete-btn" class="btn btn-danger">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const editModal = document.getElementById('editModal');
     const confirmSaveModal = document.getElementById('confirmSaveModal');
-    
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+
     const editForm = document.getElementById('editForm');
     const editInput = document.getElementById('edit_question_text');
     
@@ -231,6 +245,31 @@ document.addEventListener('DOMContentLoaded', function () {
             closeConfirmModal();
         }
     }
+
+    const openDeleteBtns = document.querySelectorAll('.delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    let formToDelete = null;
+
+    openDeleteBtns.forEach(button => {
+        button.addEventListener('click', function() {
+            const formId = this.dataset.formId;
+            formToDelete = document.getElementById(`delete-form-${formId}`);
+            deleteConfirmModal.style.display = 'block';
+        });
+    });
+
+    const closeDeleteModal = () => {
+        deleteConfirmModal.style.display = 'none';
+        formToDelete = null;
+    };
+    cancelDeleteBtn.onclick = closeDeleteModal;
+
+    confirmDeleteBtn.addEventListener('click', function() {
+        if (formToDelete) {
+            formToDelete.submit();
+        }
+    });
 });
 </script>
 </script>
