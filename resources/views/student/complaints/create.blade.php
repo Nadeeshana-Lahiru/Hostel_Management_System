@@ -4,17 +4,15 @@
 @section('page-title', 'Submit a New Complaint')
 
 @section('content')
-{{-- Added Font Awesome for icons --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <div class="form-container">
-    <form action="{{ route('student.complaints.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="complaintForm" action="{{ route('student.complaints.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <fieldset>
             <legend>Complaint Details</legend>
 
-            {{-- MODIFICATION: Wrapped some fields in a grid for a better layout --}}
             <div class="form-row">
                 <div class="form-group">
                     <label for="type">Type of Complaint</label>
@@ -32,7 +30,6 @@
                     </div>
                 </div>
 
-                {{-- MODIFICATION: Restructured the file input for custom styling --}}
                 <div class="form-group">
                     <label for="image">Attach an Image (Optional)</label>
                     <div class="file-upload-wrapper">
@@ -45,7 +42,6 @@
                 </div>
             </div>
 
-            {{-- MODIFICATION: Image preview is now in its own dedicated spot --}}
             <div id="image-preview-container">
                 <img id="image-preview" src="#" alt="Image Preview"/>
             </div>
@@ -57,7 +53,7 @@
         </fieldset>
 
         <div class="form-buttons">
-            <button type="submit" class="btn btn-submit">
+            <button type="button" id="submitBtn" class="btn btn-submit">
                 <i class="fas fa-paper-plane"></i> Submit Complaint
             </button>
             <a href="{{ route('student.complaints.index') }}" class="btn btn-secondary">
@@ -65,6 +61,17 @@
             </a>
         </div>
     </form>
+</div>
+
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Confirm Submission</h3>
+        <p>Do you need to post a new complaint?</p>
+        <div class="modal-buttons">
+            <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+            <button type="button" id="confirm-send-btn" class="btn btn-submit">Yes, Send</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -83,21 +90,47 @@
         
         if(event.target.files[0]){
             reader.readAsDataURL(event.target.files[0]);
-            fileNameSpan.textContent = event.target.files[0].name; // Show file name
+            fileNameSpan.textContent = event.target.files[0].name; 
         } else {
             previewContainer.style.display = 'none';
             imageField.src = "#";
-            fileNameSpan.textContent = "Choose a file..."; // Reset text
+            fileNameSpan.textContent = "Choose a file..."; 
         }
+
+        const complaintForm = document.getElementById('complaintForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const confirmModal = document.getElementById('confirmModal');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const confirmSendBtn = document.getElementById('confirm-send-btn');
+
+    // Show the modal when the main submit button is clicked
+    submitBtn.addEventListener('click', function (event) {
+        event.preventDefault(); // Stop the form from submitting
+        confirmModal.style.display = 'block';
+    });
+
+    // Hide the modal when the "Cancel" button is clicked
+    cancelBtn.addEventListener('click', function () {
+        confirmModal.style.display = 'none';
+    });
+
+    // Submit the form when the "Yes, Send" button is clicked
+    confirmSendBtn.addEventListener('click', function () {
+        complaintForm.submit();
+    });
+
+    // Hide the modal if the user clicks outside of it
+    window.addEventListener('click', function (event) {
+        if (event.target == confirmModal) {
+            confirmModal.style.display = 'none';
+        }
+    });
     }
 </script>
 @endsection
 
 @push('styles')
 <style>
-    /* --- MODIFIED: Complete CSS Overhaul for a Modern Look --- */
-
-    /* Define theme variables */
     :root {
         --primary-color: #4e73df;
         --primary-hover: #2e59d9;
@@ -185,12 +218,11 @@
         background-color: #fff;
     }
 
-    /* Custom Select Arrow */
     .select-wrapper {
         position: relative;
     }
     .select-wrapper::after {
-        content: '\f078'; /* Font Awesome down arrow */
+        content: '\f078'; 
         font-family: 'Font Awesome 6 Free';
         font-weight: 900;
         position: absolute;
@@ -207,7 +239,6 @@
         padding-right: 2.5rem;
     }
 
-    /* Custom File Input */
     .file-upload-wrapper input[type="file"] {
         display: none;
     }
@@ -237,9 +268,8 @@
         text-overflow: ellipsis;
     }
 
-    /* Image Preview */
     #image-preview-container {
-        display: none; /* Hidden by default */
+        display: none; 
         justify-content: center;
         align-items: center;
         margin-bottom: 1.5rem;
@@ -255,27 +285,21 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    /* Buttons */
-    /* --- UPDATED BUTTON STYLES --- */
-
-    /* 1. Update the container to align buttons to the right */
     .form-buttons {
         display: flex;
         gap: 1rem;
         margin-top: 1rem;
         border-top: 1px solid var(--border-color);
         padding-top: 2rem;
-        justify-content: flex-end; /* ADDED: This pushes the buttons to the right */
+        justify-content: flex-end; 
     }
 
-    /* 2. Update the button class to stop it from stretching */
     .btn {
-        /* REMOVED: 'flex: 1;' which caused the buttons to stretch */
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.9rem 1.5rem; /* Adjusted padding for better default size */
+        padding: 0.9rem 1.5rem; 
         font-size: 1rem;
         font-weight: 600;
         border-radius: 8px;
@@ -295,7 +319,6 @@
     .btn-secondary { background-color: var(--secondary-color); color: white; }
     .btn-secondary:hover { background-color: var(--secondary-hover); }
 
-    /* Responsive adjustments */
     @media (max-width: 768px) {
         .form-row {
             grid-template-columns: 1fr;
@@ -306,6 +329,47 @@
         .form-buttons {
             flex-direction: column;
         }
+    }
+
+    .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1050; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: 0;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    }
+    .modal-content {
+        position: relative;
+        margin: 10% auto;
+        padding: 2rem;
+        width: 90%;
+        max-width: 450px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,.3);
+        text-align: center;
+        animation: fadeIn 0.3s;
+    }
+    .modal-content h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: var(--text-dark);
+    }
+    .modal-content p {
+        margin-bottom: 2rem;
+        color: var(--text-light);
+    }
+    .modal-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
     }
 </style>
 @endpush

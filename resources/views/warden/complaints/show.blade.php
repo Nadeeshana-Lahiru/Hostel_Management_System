@@ -1,7 +1,7 @@
 @extends('warden.layout')
 
 @section('title', 'Complaint Details')
-@section('page-title', '')
+@section('page-title', 'Complaint # ' . $complaint->id)
 
 @section('content')
 <style>
@@ -115,7 +115,7 @@
                 <div class="detail-item" style="margin-top: 1rem;">
                     <strong>Attachment:</strong><br>
                     <a href="{{ asset('storage/' . $complaint->image_path) }}" target="_blank">
-                        <img src="{{ asset('storage/' . $complaint->image_path) }}" alt="Complaint Attachment" style="max-width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer;">
+                        <img src="{{ asset('storage/' . $complaint->image_path) }}" alt="Complaint Attachment" style="max-width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; border: 1px solid #e3e6f0;">
                     </a>
                 </div>
             @endif
@@ -134,8 +134,8 @@
                     </select>
                 </div>
                 <div class="form-group" style="margin-top: 1.5rem;">
-                    <label for="admin_reply">Your Reply (visible to student)</label>
-                    <textarea name="admin_reply" id="admin_reply" rows="8">{{ old('admin_reply', $complaint->admin_reply) }}</textarea>
+                    <label for="warden_reply">Your Reply (visible to student)</label>
+                    <textarea name="warden_reply" id="warden_reply" rows="8">{{ old('warden_reply', $complaint->warden_reply) }}</textarea>
                 </div>
                 <button type="button" id="save-changes-btn" class="btn-submit" style="width: 100%; margin-top: 1.5rem;">Save Changes</button>
             </form>
@@ -164,19 +164,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const cancelBtn = document.getElementById('cancel-save');
     const confirmBtn = document.getElementById('confirm-save');
 
-    openModalBtn.addEventListener('click', function (event) {
-        event.preventDefault(); 
-        modal.style.display = 'block';
-    });
+    if(openModalBtn) {
+        openModalBtn.addEventListener('click', function (event) {
+            event.preventDefault(); 
+            modal.style.display = 'block';
+        });
+    }
 
-    cancelBtn.addEventListener('click', function () {
-        modal.style.display = 'none';
-    });
+    if(cancelBtn) {
+        cancelBtn.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+    }
 
-
-    confirmBtn.addEventListener('click', function () {
-        updateForm.submit();
-    });
+    if(confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+            updateForm.submit();
+        });
+    }
 
     window.addEventListener('click', function (event) {
         if (event.target == modal) {

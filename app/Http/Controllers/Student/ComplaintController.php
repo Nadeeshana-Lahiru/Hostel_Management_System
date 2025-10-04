@@ -19,7 +19,7 @@ class ComplaintController extends StudentBaseController
         $validated = $request->validate([
             'type' => 'required|string',
             'message' => 'required|string',
-            'image' => 'nullable|image|max:2048', // Max 2MB
+            'image' => 'nullable|image|max:2048', 
         ]);
 
         $path = null;
