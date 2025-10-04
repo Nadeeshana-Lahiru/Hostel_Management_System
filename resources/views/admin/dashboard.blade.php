@@ -5,47 +5,6 @@
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Get the new elements for date and time text.
-    const dateText = document.getElementById('date-text');
-    const timeText = document.getElementById('time-text');
-
-    // Check if the elements exist on the page.
-    if (dateText && timeText) {
-        
-        function updateClock() {
-            const now = new Date();
-            
-            // Create a more beautiful, readable date format.
-            // Example: Saturday, October 4, 2025
-            const formattedDate = now.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            // Format the time. Example: 3:06:06 PM
-            const formattedTime = now.toLocaleTimeString('en-US');
-
-            // Update the text for both elements separately.
-            dateText.textContent = formattedDate;
-            timeText.textContent = formattedTime;
-        }
-
-        // Run once to show the time immediately.
-        updateClock();
-        
-        // Update every second.
-        setInterval(updateClock, 1000);
-    }
-});
-</script>
-@endpush
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <div class="stat-grid">
@@ -102,16 +61,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <div class="form-group">
                 <label for="title">Title</label>
-                <input type="text" name="title" placeholder="Enter a title..." required>
+                <input type="text" name="title" id="message_title" placeholder="Enter a title..." required>
             </div>
             <div class="form-group">
                 <label for="body">Message</label>
-                <textarea name="body" rows="4" placeholder="Type your message here..." required></textarea>
+                <textarea name="body" id="message_body" rows="4" placeholder="Type your message here..." required></textarea>
             </div>
             <div class="message-buttons">
-                <button type="submit" class="btn-send" data-recipient="warden_only">Wardens</button>
-                <button type="submit" class="btn-send" data-recipient="student_only">Students</button>
-                <button type="submit" class="btn-send active" data-recipient="both">Both</button>
+                <button type="button" class="btn-send" data-recipient="warden_only">Wardens</button>
+                <button type="button" class="btn-send" data-recipient="student_only">Students</button>
+                <button type="button" class="btn-send active" data-recipient="both">Both</button>
+
+                <button type="submit" id="realSubmitBtn" style="display: none;"></button>
             </div>
         </form>
 
@@ -133,35 +94,156 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<div id="confirmMessageModal" class="modal">
+    <div class="modal-content">
+        <h3>Confirm Message</h3>
+        <p id="modal-message-text">Are you sure you want to send this message?</p>
+        <div class="modal-buttons">
+            <button type="button" id="cancel-send-btn" class="btn-cancel">Cancel</button>
+            <button type="button" id="confirm-send-btn" class="btn-confirm">Yes, Send</button>
+        </div>
+    </div>
+</div>
+
+<div id="alertModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: #e74a3b; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <i class="fas fa-exclamation-triangle"></i> Incomplete Message
+        </h3>
+        <p id="alert-modal-text">Please fill in both the title and message fields before sending.</p>
+        <div class="modal-buttons" style="justify-content: center;">
+            <button type="button" id="close-alert-btn" class="btn-confirm">Close</button>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Chart.js script
-    const ctx = document.getElementById('facultyChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: @json($facultyChartLabels),
-            datasets: [{
-                label: 'Number of Students',
-                data: @json($facultyChartData),
-                backgroundColor: 'rgba(78, 115, 223, 0.5)',
-                borderColor: 'rgba(78, 115, 223, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-    });
 
-    // Message form script
+    // Get the new elements for date and time text.
+    const dateText = document.getElementById('date-text');
+    const timeText = document.getElementById('time-text');
+
+    // Check if the elements exist on the page.
+    if (dateText && timeText) {
+        
+        function updateClock() {
+            const now = new Date();
+            
+            // Create a more beautiful, readable date format.
+            // Example: Saturday, October 4, 2025
+            const formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Format the time. Example: 3:06:06 PM
+            const formattedTime = now.toLocaleTimeString('en-US');
+
+            // Update the text for both elements separately.
+            dateText.textContent = formattedDate;
+            timeText.textContent = formattedTime;
+        }
+
+        // Run once to show the time immediately.
+        updateClock();
+        
+        // Update every second.
+        setInterval(updateClock, 1000);
+    }
+
+    const facultyChart = document.getElementById('facultyChart');
+    if (facultyChart) {
+        const ctx = facultyChart.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @json($facultyChartLabels),
+                datasets: [{
+                    label: 'Number of Students',
+                    data: @json($facultyChartData),
+                    backgroundColor: 'rgba(78, 115, 223, 0.5)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        });
+    }
+
+    const messageForm = document.getElementById('messageForm');
+    const messageTitle = document.getElementById('message_title');
+    const messageBody = document.getElementById('message_body');
     const messageButtons = document.querySelectorAll('.message-buttons .btn-send');
     const recipientInput = document.getElementById('recipient_type');
     
+    const confirmModal = document.getElementById('confirmMessageModal');
+    const alertModal = document.getElementById('alertModal');
+
+    const modalText = document.getElementById('modal-message-text');
+    const cancelSendBtn = document.getElementById('cancel-send-btn');
+    const confirmSendBtn = document.getElementById('confirm-send-btn');
+    const closeAlertBtn = document.getElementById('close-alert-btn');
+
     messageButtons.forEach(button => {
         button.addEventListener('click', function (e) {
-            recipientInput.value = this.dataset.recipient;
+            e.preventDefault(); // Stop form submission
+
+            // Check for empty fields before showing modal
+            if (!messageTitle.value.trim() || !messageBody.value.trim()) {
+                if (alertModal) alertModal.style.display = 'block';
+                return;
+            }
+
+            // Update recipient input and button styles
+            const recipient = this.dataset.recipient;
+            recipientInput.value = recipient;
             messageButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
+
+            // Set dynamic modal message
+            let confirmationMessage = '';
+            if (recipient === 'warden_only') {
+                confirmationMessage = "Do you need to send this message for Wardens Only?";
+            } else if (recipient === 'student_only') {
+                confirmationMessage = "Do you need to send this message for Students Only?";
+            } else {
+                confirmationMessage = "Do you need to send this message for Both Wardens and Students?";
+            }
+            modalText.textContent = confirmationMessage;
+
+            // Show the modal
+            confirmModal.style.display = 'block';
         });
+    });
+
+    if (confirmSendBtn) {
+        confirmSendBtn.addEventListener('click', function() {
+            document.getElementById('realSubmitBtn').click();
+        });
+    }
+
+    if (cancelSendBtn) {
+        cancelSendBtn.addEventListener('click', function() {
+            if(confirmModal) confirmModal.style.display = 'none';
+        });
+    }
+
+    if (closeAlertBtn) {
+        closeAlertBtn.addEventListener('click', function() {
+            if(alertModal) alertModal.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == confirmModal) {
+            if(confirmModal) confirmModal.style.display = 'none';
+        }
+        if (event.target == alertModal) {
+            if(alertModal) alertModal.style.display = 'none';
+        }
     });
 });
 </script>
@@ -349,4 +431,28 @@ document.addEventListener('DOMContentLoaded', function () {
         font-size: 0.75rem;
         color: #b7b9cc;
     }
+
+    .modal {
+    display: none; position: fixed; z-index: 1050; left: 0; top: 0;
+    width: 100%; height: 100%; overflow: hidden;
+    background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+    }
+    .modal-content {
+        position: relative; margin: 10% auto; padding: 2rem;
+        width: 90%; max-width: 450px; background-color: #fff;
+        border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,.3);
+        text-align: center; animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .modal-content h3 { margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; color: var(--text-dark); }
+    .modal-content p { margin-bottom: 2rem; color: var(--text-light); }
+    .modal-buttons { display: flex; gap: 1rem; justify-content: center; }
+    .modal-buttons button {
+        flex: 1; padding: 10px; border: none; cursor: pointer;
+        border-radius: 5px; transition: all 0.2s; font-weight: 600;
+    }
+    .modal-buttons .btn-cancel { background-color: #858796; color: white; }
+    .modal-buttons .btn-cancel:hover { background-color: #717384; }
+    .modal-buttons .btn-confirm { background-color: #4e73df; color: white; }
+    .modal-buttons .btn-confirm:hover { background-color: #2e59d9; }
 </style>
