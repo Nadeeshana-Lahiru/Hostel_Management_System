@@ -5,7 +5,6 @@
 
 @section('content')
 <style>
-
     .page-container { max-width: 1100px; margin: auto; }
     .page-actions { margin-bottom: 25px; }
     .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
