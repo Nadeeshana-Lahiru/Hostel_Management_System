@@ -39,7 +39,7 @@
         border: none;
         cursor: pointer;
         margin-right: 5px;
-        display: inline-block; /* Ensures proper alignment */
+        display: inline-block; 
     }
     .actions-column {
         text-align: right;
@@ -51,12 +51,12 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .btn-primary:hover {
-        background-color: #2e59d9; /* Darker shade on hover */
-        transform: translateY(-2px); /* Lifts the button up slightly */
-        box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4); /* Stronger shadow */
+        background-color: #2e59d9; 
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4);
     }
     .btn-secondary { background-color: #858796; color: white; text-decoration: none; }
-    .btn-info { background-color: #36b9cc; } /* NEW: Teal for Details */
+    .btn-info { background-color: #36b9cc; } 
     .btn-info:hover { background-color: #2a96a5; }
     .btn-warning { background-color: #f6c23e; }
     .btn-warning:hover { background-color: #dda20a; }
@@ -79,7 +79,6 @@
     .modal-buttons { display: flex; gap: 1rem; justify-content: center; }
     .modal-buttons .btn { flex-grow: 1; max-width: 120px; }
 
-    /* Search Form Styles */
     .search-and-controls {
         display: flex;
         justify-content: space-between;
@@ -95,7 +94,7 @@
         align-items: center;
     }
     .search-form input {
-        width: 300px; /* Gives the input a fixed width */
+        width: 300px;
         padding: 10px;
         border-radius: 5px;
         border: 1px solid #ddd;
@@ -103,10 +102,9 @@
     .search-form .btn {
         padding: 10px 20px;
         font-weight: 600;
-        white-space: nowrap; /* Prevents button text from wrapping */
+        white-space: nowrap;
     }
 
-    /* Warden Count Display */
     .warden-count-display {
         text-align: right;
     }
