@@ -49,9 +49,9 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.wardens.update', $warden->id) }}" method="POST">
+    <form id="editWardenForm" action="{{ route('admin.wardens.update', $warden->id) }}" method="POST">
         @csrf
-        @method('PUT') {{-- Important for updates --}}
+        @method('PUT') 
         
         <div class="form-grid">
             <div class="form-group">
@@ -81,16 +81,55 @@
                 <label for="dob">Date of Birth</label>
                 <input type="date" id="dob" name="dob" value="{{ old('dob', $warden->dob) }}" required>
             </div>
-            {{-- ... Fill the value for all other inputs similarly ... --}}
+            <div class="form-group">
+                <label for="telephone_number">Teliphone</label>
+                <input type="text" id="telephone_number" name="telephone_number" value="{{ old('telephone_number', $warden->telephone_number) }}" required>
+            </div>
             <div class="form-group full-width">
                 <label for="address">Address</label>
                 <textarea id="address" name="address" rows="3" required>{{ old('address', $warden->address) }}</textarea>
             </div>
         </div>
         <div class="form-buttons">
-            <button type="submit" class="btn btn-submit">Update Warden</button>
+            <button type="button" id="updateBtn" class="btn btn-submit">Update Warden</button>
             <a href="{{ route('admin.wardens.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
+
+<div id="confirmModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center;">
+        <h4 style="margin-top: 0;">Confirm Update</h4>
+        <p>Are you sure you want to make these changes?</p>
+        <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+            <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+            <button type="button" id="confirmBtn" class="btn btn-submit">Yes, Update</button>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const editForm = document.getElementById('editWardenForm');
+    const updateBtn = document.getElementById('updateBtn');
+    const confirmModal = document.getElementById('confirmModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+
+    updateBtn.addEventListener('click', function () {
+        confirmModal.style.display = 'block';
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        confirmModal.style.display = 'none';
+    });
+
+    confirmBtn.addEventListener('click', function () {
+        editForm.submit();
+    });
+});
+</script>
+@endpush
