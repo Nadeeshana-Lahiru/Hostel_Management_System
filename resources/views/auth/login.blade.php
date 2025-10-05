@@ -179,232 +179,22 @@
             text-align: center;
         }
 
-        /* --- CHANGE: PUZZLE STYLES REFINED --- */
-        #puzzle_container {
-            position: relative; height: 250px; background-color: var(--light-gray);
-            border-radius: 8px; overflow: hidden; user-select: none; margin-top: 1.5rem;
-        }
-        .puzzle-piece, .puzzle-target {
-            position: absolute; width: 60px; height: 60px;
-            display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
-        }
-        .puzzle-piece {
-            cursor: grab; background-color: rgba(255,255,255,0.7);
-            border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .puzzle-piece:active { cursor: grabbing; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-        .puzzle-target {
-            border: 3px dashed var(--dark-gray); border-radius: 12px;
-            color: var(--dark-gray); opacity: 0.5;
-        }
-        #puzzle_error_msg {
-            color: var(--danger-color); font-weight: 500;
-            min-height: 1.2rem; /* Use min-height to prevent layout shift */
-            margin-bottom: 1rem; /* Changed from margin-top */
-            text-align: center; opacity: 0;
-            transition: opacity 0.3s;
+        .inline-error-msg {
+            color: var(--danger-color); 
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 8px;
+            display: none; 
         }
 
-        /* Robot Checkbox Styles */
-        #robot_check_container {
-            margin-top: 1.5rem; display: none;
-            opacity: 0; transition: opacity 0.5s ease-in-out;
-        }
-        .robot-check {
-            display: flex; align-items: center; padding: 15px;
-            border: 1px solid var(--medium-gray); border-radius: 8px;
-            background-color: var(--light-gray); cursor: pointer;
-        }
-        .robot-check:hover { border-color: #c5cbe0; }
-        .robot-check input[type="checkbox"] {
-            width: 20px; height: 20px; margin-right: 15px; cursor: pointer;
-        }
-        .robot-check label { margin: 0; font-size: 1rem; color: var(--text-color); cursor: pointer; }
-
-        /* --- CHANGE: SHAKE ANIMATION FOR PUZZLE ERROR --- */
-        @keyframes shake {
-            10%, 90% { transform: translateX(-1px); }
-            20%, 80% { transform: translateX(2px); }
-            30%, 50%, 70% { transform: translateX(-4px); }
-            40%, 60% { transform: translateX(4px); }
-        }
-        .shake { animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both; }
-        
-        /* --- CHANGE: SUCCESS CHECKMARK ANIMATION --- */
-
-        /* Styles the modal's appearance and layout.
-        /* ------------------------------------------ */
-        #successModal .modal-content {
-            max-width: 360px;
-            padding: 20px 30px 25px 30px;
-            text-align: center;
-            background-color: var(--modal-background);
-            border-radius: 12px;
-            /* Animation for the modal pop-up effect */
-            animation: scaleIn 0.3s ease-out;
-        }
-
-        #successModal .modal-body {
-            padding: 0;
-        }
-
-        #successModal h3 {
-            margin: 0.5rem 0;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        #successModal p {
-            margin: 0 0 1.75rem 0;
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        #successModal .modal-buttons {
-            grid-template-columns: 1fr;
-            justify-items: center;
-            margin-top: 0;
-        }
-
-        #successModal #finalLoginBtn {
-            max-width: 150px;
-        }
-
-
-        /* 3. Animated Checkmark
-        /* All styles required for the checkmark animation.
-        /* ------------------------------------------ */
-        .success-checkmark {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 10px;
-        }
-
-        .success-checkmark .check-icon {
-            width: 80px;
-            height: 80px;
-            position: relative;
-            display: block;
-            box-sizing: content-box;
-            border: 4px solid var(--success-color);
-            border-radius: 50%;
-        }
-
-        /* Pseudo-elements used to create the circle-wipe effect */
-        .success-checkmark .check-icon::before,
-        .success-checkmark .check-icon::after {
-            content: '';
-            height: 100px;
-            position: absolute;
-            background: var(--modal-background);
-            transform: rotate(-45deg);
-        }
-
-        .success-checkmark .check-icon::before {
-            top: 3px;
-            left: -2px;
-            width: 30px;
-            transform-origin: 100% 50%;
-            border-radius: 100px 0 0 100px;
-        }
-
-        .success-checkmark .check-icon::after {
-            top: 0;
-            left: 30px;
-            width: 60px;
-            transform-origin: 0 50%;
-            border-radius: 0 100px 100px 0;
-            /* This animation rotates the element to reveal the checkmark */
-            animation: rotate-circle 0.8s 0.3s ease-in forwards;
-        }
-
-        /* The two lines that form the checkmark */
-        .success-checkmark .icon-line {
-            height: 5px;
-            background-color: var(--success-color);
-            display: block;
-            border-radius: 2px;
-            position: absolute;
-            z-index: 10;
-        }
-
-        .success-checkmark .icon-line.line-tip {
-            top: 46px;
-            left: 14px;
-            width: 25px;
-            transform: rotate(45deg);
-            /* Animation to draw the shorter line with a rebound effect */
-            animation: icon-line-tip 0.75s forwards;
-        }
-
-        .success-checkmark .icon-line.line-long {
-            top: 38px;
-            right: 8px;
-            width: 47px;
-            transform: rotate(-45deg);
-            /* Animation to draw the longer line with a rebound effect */
-            animation: icon-line-long 0.75s forwards;
-        }
-
-        /* This element hides part of the checkmark lines during animation */
-        .success-checkmark .icon-fix {
-            position: absolute;
-            z-index: 1;
-            width: 5px;
-            height: 90px;
-            top: 8px;
-            left: 28px;
-            background-color: var(--modal-background);
-            transform: rotate(-45deg);
-        }
-
-
-        /* 4. Animation Keyframes
-        /* Defines the steps for all animations.
-        /* ------------------------------------------ */
-
-        /* Modal pop-in effect */
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Circle-wipe effect */
-        @keyframes rotate-circle {
-            from {
-                transform: rotate(-45deg);
-            }
-            to {
-                transform: rotate(-405deg);
-            }
-        }
-
-        /* Draws the shorter checkmark line */
-        @keyframes icon-line-tip {
-            0%   { width: 0; left: 1px; top: 19px; }
-            54%  { width: 0; left: 1px; top: 19px; }
-            70%  { width: 50px; left: -8px; top: 37px; }
-            84%  { width: 17px; left: 21px; top: 48px; }
-            100% { width: 25px; left: 14px; top: 46px; }
-        }
-
-        /* Draws the longer checkmark line */
-        @keyframes icon-line-long {
-            0%   { width: 0; right: 46px; top: 54px; }
-            65%  { width: 0; right: 46px; top: 54px; }
-            84%  { width: 55px; right: 0px; top: 35px; }
-            100% { width: 47px; right: 8px; top: 38px; }
+        input.is-invalid { 
+            border-color: var(--danger-color); 
         }
         
-        
+        input.is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(231, 74, 59, 0.2);
+        }
+
     </style>
 </head>
 <body>
@@ -438,57 +228,7 @@
                 <div class="forgot-password">
                     <button type="button" class="forgot-password-btn">Forgot Password?</button>
                 </div>
-
-                <div id="robot_check_container">
-                    <div class="robot-check">
-                        <input type="checkbox" id="robot_check_box">
-                        <label for="robot_check_box">I am not a robot</label>
-                    </div>
-                </div>
             </form>
-        </div>
-    </div>
-
-    <!-- PUZZLE MODAL -->
-    <div id="puzzleModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Complete the Security Puzzle</h3>
-            </div>
-            <div class="modal-body">
-                <div id="puzzle_error_msg"></div>
-                <p>Drag the item on the left to its matching home on the right.</p>
-                <div id="puzzle_container">
-                    <div id="puzzle_piece" class="puzzle-piece"></div>
-                    <div id="puzzle_target" class="puzzle-target"></div>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button type="button" id="puzzleCancelBtn" class="btn btn-secondary">Cancel</button>
-                <button type="button" id="puzzleSubmitBtn" class="btn btn-primary">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SUCCESS MODAL -->
-    <div id="successModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-body">
-                {{-- CHANGE: Added animated checkmark HTML --}}
-                <div class="success-checkmark">
-                    <div class="check-icon">
-                      <span class="icon-line line-tip"></span>
-                      <span class="icon-line line-long"></span>
-                      <div class="icon-circle"></div>
-                      <div class="icon-fix"></div>
-                    </div>
-                </div>
-                <h3 style="margin-top:1rem; font-size: 1.5rem;">Login Successful!</h3>
-                <p>You will now be redirected to your dashboard.</p>
-            </div>
-            <div class="modal-buttons" style="grid-template-columns: 1fr; justify-items: center;">
-                <button type="button" id="finalLoginBtn" class="btn btn-primary" style="max-width: 150px;">OK</button>
-            </div>
         </div>
     </div>
 
@@ -684,39 +424,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // =============================================================
-    // --- UPDATED SCRIPT FOR CUSTOM LOGIN FLOW ---
+    // --- SCRIPT FOR LOGIN WITH INLINE ERROR MESSAGES ---
     // =============================================================
 
     const mainLoginForm = document.getElementById('mainLoginForm');
     const checkCredentialsBtn = document.getElementById('checkCredentialsBtn');
-    
+
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const usernameError = document.getElementById('username_error');
     const passwordError = document.getElementById('password_error');
 
-    const robotCheckContainer = document.getElementById('robot_check_container');
-    const robotCheckBox = document.getElementById('robot_check_box');
-
-    const puzzleModal = document.getElementById('puzzleModal');
-    const successModal = document.getElementById('successModal');
-    
+    // A helper function to clear previous errors
     function clearErrors() {
+        // Hide the error message text
         usernameError.style.display = 'none';
-        usernameInput.classList.remove('is-invalid');
         passwordError.style.display = 'none';
+
+        // Remove the red border from the input fields
+        usernameInput.classList.remove('is-invalid');
         passwordInput.classList.remove('is-invalid');
     }
 
     checkCredentialsBtn.addEventListener('click', async () => {
+        // First, clear any old errors from a previous attempt
         clearErrors();
-        robotCheckContainer.style.opacity = '0';
-        robotCheckContainer.style.display = 'none';
-        robotCheckBox.checked = false;
 
+        // Get the form data
         const formData = new FormData(mainLoginForm);
         
         try {
+            // Send the data to your Laravel backend to check it
             const response = await fetch('{{ route("login.check") }}', {
                 method: 'POST',
                 body: formData,
@@ -728,165 +466,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const data = await response.json();
 
+            // If the response is NOT okay (e.g., status 422 for validation error)
             if (!response.ok) {
+                // Check if the server sent back specific error messages
                 if (data.errors) {
+                    // If there's a username error, display it
                     if (data.errors.username) {
                         usernameInput.classList.add('is-invalid');
                         usernameError.textContent = data.errors.username[0];
                         usernameError.style.display = 'block';
                     }
+                    // If there's a password error, display it
                     if (data.errors.password) {
                         passwordInput.classList.add('is-invalid');
                         passwordError.textContent = data.errors.password[0];
                         passwordError.style.display = 'block';
                     }
                 }
+            // If the response IS okay, it means credentials are correct!
             } else {
-                robotCheckContainer.style.display = 'block';
-                setTimeout(() => { robotCheckContainer.style.opacity = '1'; }, 50);
+                // Now, submit the form to actually log the user in
+                mainLoginForm.submit();
             }
         } catch (error) {
+            // This catches network errors or other unexpected issues
             console.error('An error occurred:', error);
             passwordError.textContent = 'An unexpected error occurred. Please try again.';
             passwordError.style.display = 'block';
         }
     });
 
-    robotCheckBox.addEventListener('change', () => {
-        if (robotCheckBox.checked) {
-            setupAndShowPuzzle();
-        }
-    });
-
-    // --- CHANGE: Puzzle logic updated for regeneration ---
-    const puzzleContainer = document.getElementById('puzzle_container');
-    const piece = document.getElementById('puzzle_piece');
-    const target = document.getElementById('puzzle_target');
-    const puzzleErrorMsg = document.getElementById('puzzle_error_msg');
-    const puzzleCancelBtn = document.getElementById('puzzleCancelBtn');
-    const puzzleSubmitBtn = document.getElementById('puzzleSubmitBtn');
-    const puzzleModalContent = puzzleModal.querySelector('.modal-content');
-
-    // CHANGE: Create a pool of puzzles to choose from
-    const puzzles = [
-        { piece: '🔑', target: '🔒' },
-        { piece: '✉️', target: '📫' },
-        { piece: '🚗', target: '🛖' },
-        { piece: '🧀', target: '🐭' },
-        { piece: '🚀', target: '🪐' }
-    ];
-    let currentPuzzleIndex = -1;
-
-    let isDragging = false;
-    let offsetX, offsetY;
-
-    function isSolved() {
-        const pieceRect = piece.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-        const overlapThreshold = 0.6; // Piece must overlap 60% of the target
-        
-        const xOverlap = Math.max(0, Math.min(pieceRect.right, targetRect.right) - Math.max(pieceRect.left, targetRect.left));
-        const yOverlap = Math.max(0, Math.min(pieceRect.bottom, targetRect.bottom) - Math.max(pieceRect.top, targetRect.top));
-        const overlapArea = xOverlap * yOverlap;
-        const targetArea = targetRect.width * targetRect.height;
-
-        return overlapArea / targetArea > overlapThreshold;
-    }
-
-    function randomizePositions() {
-        const containerWidth = puzzleContainer.clientWidth;
-        const containerHeight = puzzleContainer.clientHeight;
-        const pieceSize = 60;
-        const padding = 10;
-
-        target.style.top = `${Math.random() * (containerHeight - pieceSize)}px`;
-        target.style.left = `${Math.random() * (containerWidth - pieceSize)}px`;
-
-        let pieceX, pieceY;
-        do {
-            pieceX = Math.random() * (containerWidth - pieceSize);
-            pieceY = Math.random() * (containerHeight - pieceSize);
-        } while (
-            Math.abs(pieceX - parseFloat(target.style.left)) < (pieceSize * 1.5) && 
-            Math.abs(pieceY - parseFloat(target.style.top)) < (pieceSize * 1.5)
-        );
-        piece.style.top = `${pieceY}px`;
-        piece.style.left = `${pieceX}px`;
-    }
-    
-    function generateNewPuzzle() {
-        // CHANGE: Select a new random puzzle that is different from the current one
-        let newIndex;
-        do {
-            newIndex = Math.floor(Math.random() * puzzles.length);
-        } while (newIndex === currentPuzzleIndex);
-        currentPuzzleIndex = newIndex;
-        
-        const newPuzzle = puzzles[currentPuzzleIndex];
-        piece.innerHTML = newPuzzle.piece;
-        target.innerHTML = newPuzzle.target;
-        
-        randomizePositions();
-    }
-
-    function setupAndShowPuzzle() {
-        puzzleModal.style.display = 'flex';
-        puzzleErrorMsg.textContent = '';
-        puzzleErrorMsg.style.opacity = '0';
-        generateNewPuzzle();
-    }
-
-    puzzleCancelBtn.addEventListener('click', () => {
-        puzzleModal.style.display = 'none';
-        robotCheckBox.checked = false;
-    });
-
-    puzzleSubmitBtn.addEventListener('click', () => {
-        if (isSolved()) {
-            puzzleModal.style.display = 'none';
-            successModal.style.display = 'flex';
-        } else {
-            // CHANGE: Add shake animation and regenerate a completely new puzzle
-            puzzleModalContent.classList.add('shake');
-            puzzleErrorMsg.textContent = 'Puzzle not correct. Try this new one!';
-            puzzleErrorMsg.style.opacity = '1';
-            generateNewPuzzle();
-            
-            // Remove shake class after animation ends
-            setTimeout(() => {
-                puzzleModalContent.classList.remove('shake');
-            }, 820);
-        }
-    });
-
-    piece.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - piece.getBoundingClientRect().left;
-        offsetY = e.clientY - piece.getBoundingClientRect().top;
-        piece.style.transition = 'none';
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        let x = e.clientX - puzzleContainer.getBoundingClientRect().left - offsetX;
-        let y = e.clientY - puzzleContainer.getBoundingClientRect().top - offsetY;
-
-        x = Math.max(0, Math.min(x, puzzleContainer.clientWidth - piece.clientWidth));
-        y = Math.max(0, Math.min(y, puzzleContainer.clientHeight - piece.clientHeight));
-        
-        piece.style.left = `${x}px`;
-        piece.style.top = `${y}px`;
-    });
-
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-        piece.style.transition = '';
-    });
-    
-    const finalLoginBtn = document.getElementById('finalLoginBtn');
-    finalLoginBtn.addEventListener('click', () => {
-        mainLoginForm.submit();
-    });
 });
 </script>
 
