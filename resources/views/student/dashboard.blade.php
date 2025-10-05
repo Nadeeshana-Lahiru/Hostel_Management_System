@@ -4,6 +4,8 @@
 
 @section('content')
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -67,6 +69,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <small>From: {{ ucfirst($message->sender_role) }}</small>
                     </div>
                     <p>{{ $message->body }}</p>
+                    @if($message->attachment_path)
+                        <div class="message-attachment">
+                            <a href="{{ asset('storage/' . $message->attachment_path) }}" target="_blank">
+                                <i class="fas fa-file-pdf"></i> View Attachment
+                            </a>
+                        </div>
+                    @endif
                     <small class="message-footer">{{ $message->created_at->format('M d, Y H:i A') }}</small>
                 </div>
             @empty
@@ -210,6 +219,21 @@ document.addEventListener('DOMContentLoaded', function() {
     .message-footer {
         font-size: 0.75rem;
         color: #b7b9cc;
+    }
+    .message-attachment {
+        margin-top: 8px;
+    }
+    .message-attachment a {
+        color: #e74a3b; 
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .message-attachment a:hover {
+        text-decoration: underline;
+    }
+    .message-attachment i {
+        margin-right: 5px;
     }
 </style>
 @endpush
