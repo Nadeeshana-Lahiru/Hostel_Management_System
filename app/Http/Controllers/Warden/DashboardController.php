@@ -44,11 +44,23 @@ class DashboardController extends Controller
         $facultyChartLabels = $facultyData->keys();
         $facultyChartData = $facultyData->values();
 
-        // --- Fetch Messages for Display ---
-        $messages = Message::where(function ($query) {
-                $query->where('recipient_type', 'student_only')
-                      ->orWhere('recipient_type', 'both');
-            })->latest()->take(5)->get();
+        // This new query fetches all messages relevant to the current warden.
+        $wardenUserId = Auth::id();
+
+        $messages = Message::where(function ($query) use ($wardenUserId) {
+            // Condition 1: Messages FROM the Admin TO wardens or everyone
+            $query->where('sender_role', 'admin')
+                  ->whereIn('recipient_type', ['warden_only', 'both']);
+    
+            // Condition 2: OR messages sent BY the currently logged-in warden
+            $query->orWhere(function ($subQuery) use ($wardenUserId) {
+                $subQuery->where('sender_role', 'warden')
+                         ->where('sender_id', $wardenUserId);
+            });
+        })
+        ->latest() // Order by the newest first
+        ->take(15)   // Get the last 15 messages
+        ->get();
 
         return view('warden.dashboard', compact(
             'studentCount', 'availableRoomsCount',

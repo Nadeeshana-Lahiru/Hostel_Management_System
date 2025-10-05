@@ -37,7 +37,7 @@
     <div class="message-center">
         <h4>Announcements & Notices</h4>
         
-        <form action="{{ route('warden.messages.store') }}" method="POST" id="messageForm" class="message-form">
+        <form action="{{ route('warden.messages.store') }}" method="POST" id="messageForm" class="message-form" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="recipient_type" id="recipient_type" value="student_only">
             
@@ -48,6 +48,16 @@
             <div class="form-group">
                 <label for="body">Message</label>
                 <textarea name="body" id="message_body" rows="4" placeholder="Type your message here..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="attachment">Attachment (Optional PDF)</label>
+                <div class="custom-file-input-wrapper">
+                    <input type="file" name="attachment" id="attachment" class="hidden-file-input" accept=".pdf">
+                    <button type="button" class="btn-custom-file-upload">
+                        <i class="fas fa-upload"></i> Choose File
+                    </button>
+                    <span class="file-name" id="file-name">No file chosen</span>
+                </div>
             </div>
             <div class="message-buttons">
                 <button type="button" class="btn-send active" data-recipient="student_only">Send to Students</button>
@@ -64,6 +74,13 @@
                         <small>{{ ucwords(str_replace('_', ' ', $message->recipient_type)) }}</small>
                     </div>
                     <p>{{ $message->body }}</p>
+                    @if($message->attachment_path)
+                        <div class="message-attachment">
+                            <a href="{{ asset('storage/' . $message->attachment_path) }}" target="_blank">
+                                <i class="fas fa-file-pdf"></i> View Attachment
+                            </a>
+                        </div>
+                    @endif
                     <small class="message-footer">{{ $message->created_at->format('M d, Y H:i A') }}</small>
                 </div>
             @empty
@@ -191,14 +208,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    window.addEventListener('click', function(event) {
-        if (event.target == confirmModal) {
-            if(confirmModal) confirmModal.style.display = 'none';
-        }
-        if (event.target == alertModal) {
-            if(alertModal) alertModal.style.display = 'none';
-        }
-    });
+    const attachmentInput = document.getElementById('attachment');
+    const fileNameSpan = document.getElementById('file-name');
+    const customFileUploadBtn = document.querySelector('.btn-custom-file-upload');
+
+    if (customFileUploadBtn) {
+        customFileUploadBtn.addEventListener('click', function() {
+            attachmentInput.click();
+        });
+    }
+
+    if (attachmentInput && fileNameSpan) {
+        attachmentInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                fileNameSpan.textContent = this.files[0].name;
+            } else {
+                fileNameSpan.textContent = 'No file chosen';
+            }
+        });
+    }
 });
 </script>
 @endpush
@@ -396,4 +424,52 @@ document.addEventListener('DOMContentLoaded', function () {
     .modal-buttons .btn-cancel:hover { background-color: #717384; }
     .modal-buttons .btn-confirm { background-color: #4e73df; color: white; }
     .modal-buttons .btn-confirm:hover { background-color: #2e59d9; }
+
+    .message-center {
+        background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .message-form {
+        background: #f8f9fc; padding: 15px; border-radius: 8px; border: 1px solid #e3e6f0;
+    }
+    .message-form .form-group { margin-bottom: 15px; }
+    .message-form label {
+        font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block; color: #5a5c69;
+    }
+    .message-form input, .message-form textarea {
+        width: 100%; padding: 10px; border: 1px solid #d1d3e2; border-radius: 5px;
+    }
+    .message-buttons { display: flex; gap: 10px; margin-top: 15px; }
+    .message-buttons .btn-send {
+        flex: 1; padding: 10px; border: 1px solid #4e73df; background: #4e73df; color: white;
+        cursor: pointer; border-radius: 5px; font-weight: 600;
+    }
+    .message-history {
+        height: 300px; overflow-y: auto; border: 1px solid #e3e6f0; padding: 15px;
+        margin-top: 15px; border-radius: 8px;
+    }
+    .message-item {
+        border-bottom: 1px solid #e3e6f0; padding-bottom: 10px; margin-bottom: 10px;
+    }
+    .message-header { display: flex; justify-content: space-between; align-items: baseline; }
+    .message-footer { font-size: 0.75rem; color: #b7b9cc; }
+
+    /* Styles for the attachment elements */
+    .message-attachment { margin-top: 8px; }
+    .message-attachment a { color: #e74a3b; text-decoration: none; font-weight: 500; font-size: 0.85rem; }
+    .message-attachment a:hover { text-decoration: underline; }
+    .message-attachment i { margin-right: 5px; }
+
+    /* Styles for the custom file input */
+    .custom-file-input-wrapper { display: flex; align-items: center; border: 1px solid #d1d3e2; border-radius: 5px; background-color: #fff; padding: 5px; }
+    .hidden-file-input { width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1; }
+    .btn-custom-file-upload { background-color: #4e73df; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .btn-custom-file-upload:hover { background-color: #2e59d9; }
+    .file-name {
+        margin-left: 10px;
+        color: #5a5c69;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; 
+        min-width: 0; 
+    }
 </style>
