@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Warden;
 
 use App\Models\Message;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AnnouncementEmail;
 
 class MessageController extends WardenBaseController
 {
@@ -38,7 +41,14 @@ class MessageController extends WardenBaseController
         }
 
         // 4. Create the message ONCE using the complete data array
-        Message::create($messageData);
+        $message = Message::create($messageData);
+
+        $studentEmails = Student::with('user')->get()->pluck('user.email')->filter();
+
+        // 6. Send the email to all students using BCC for privacy
+        if ($studentEmails->isNotEmpty()) {
+            Mail::bcc($studentEmails)->send(new AnnouncementEmail($message));
+        }
 
         // 5. Redirect back with a success message
         return redirect()->route('warden.dashboard')->with('success', 'Message sent to students successfully!');
