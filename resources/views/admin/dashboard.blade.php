@@ -55,7 +55,7 @@
     <div class="message-center">
         <h4>Announcements & Notices</h4>
         
-        <form action="{{ route('admin.messages.store') }}" method="POST" id="messageForm" class="message-form">
+        <form action="{{ route('admin.messages.store') }}" method="POST" id="messageForm" class="message-form" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="recipient_type" id="recipient_type" value="both">
             
@@ -66,6 +66,16 @@
             <div class="form-group">
                 <label for="body">Message</label>
                 <textarea name="body" id="message_body" rows="4" placeholder="Type your message here..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="attachment">Attachment (Optional PDF)</label>
+                <div class="custom-file-input-wrapper">
+                    <input type="file" name="attachment" id="attachment" class="hidden-file-input" accept=".pdf">
+                    <button type="button" class="btn-custom-file-upload">
+                        <i class="fas fa-upload"></i> Choose File
+                    </button>
+                    <span class="file-name" id="file-name">No file chosen</span>
+                </div>
             </div>
             <div class="message-buttons">
                 <button type="button" class="btn-send" data-recipient="warden_only">Wardens</button>
@@ -85,6 +95,13 @@
                         <small>{{ ucwords(str_replace('_', ' ', $message->recipient_type)) }}</small>
                     </div>
                     <p>{{ $message->body }}</p>
+                    @if($message->attachment_path)
+                        <div class="message-attachment">
+                            <a href="{{ asset('storage/' . $message->attachment_path) }}" target="_blank">
+                                <i class="fas fa-file-pdf"></i> View Attachment
+                            </a>
+                        </div>
+                    @endif
                     <small class="message-footer">{{ $message->created_at->format('M d, Y H:i A') }}</small>
                 </div>
             @empty
@@ -237,14 +254,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    window.addEventListener('click', function(event) {
-        if (event.target == confirmModal) {
-            if(confirmModal) confirmModal.style.display = 'none';
-        }
-        if (event.target == alertModal) {
-            if(alertModal) alertModal.style.display = 'none';
-        }
-    });
+    const attachmentInput = document.getElementById('attachment');
+    const fileNameSpan = document.getElementById('file-name');
+    const customFileUploadBtn = document.querySelector('.btn-custom-file-upload');
+
+    // Trigger click on hidden input when custom button is clicked
+    if (customFileUploadBtn) {
+        customFileUploadBtn.addEventListener('click', function() {
+            attachmentInput.click();
+        });
+    }
+
+    // Update the displayed file name when a file is selected
+    if (attachmentInput && fileNameSpan) {
+        attachmentInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                fileNameSpan.textContent = this.files[0].name;
+            } else {
+                fileNameSpan.textContent = 'No file chosen';
+            }
+        });
+    }
 });
 </script>
 @endsection
@@ -455,4 +485,86 @@ document.addEventListener('DOMContentLoaded', function () {
     .modal-buttons .btn-cancel:hover { background-color: #717384; }
     .modal-buttons .btn-confirm { background-color: #4e73df; color: white; }
     .modal-buttons .btn-confirm:hover { background-color: #2e59d9; }
+
+    .form-control-file {
+        display: block;
+        width: 100%;
+        padding: 8px;
+        font-size: 0.9rem;
+        border: 1px solid #d1d3e2;
+        border-radius: 5px;
+        background-color: #fff;
+    }
+    .message-attachment {
+        margin-top: 8px;
+    }
+    .message-attachment a {
+        color: #e74a3b;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .message-attachment a:hover {
+        text-decoration: underline;
+    }
+    .message-attachment i {
+        margin-right: 5px;
+    }
+
+    .custom-file-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d3e2;
+    border-radius: 5px;
+    background-color: #fff;
+    padding: 5px; /* Adjust padding to fit the button and text */
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .custom-file-input-wrapper:focus-within {
+        outline: none;
+        border-color: #4e73df;
+        box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.25);
+    }
+
+    .hidden-file-input {
+        /* Visually hide the input, but keep it accessible for screen readers */
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .btn-custom-file-upload {
+        background-color: #4e73df; /* Primary blue color */
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between icon and text */
+        transition: background-color 0.2s ease;
+    }
+    .btn-custom-file-upload:hover {
+        background-color: #2e59d9; /* Darker blue on hover */
+    }
+    .btn-custom-file-upload i {
+        font-size: 1rem;
+    }
+
+    .file-name {
+        margin-left: 10px;
+        color: #5a5c69;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Add ellipsis for long file names */
+        flex-grow: 1; /* Allows the text to take up available space */
+        font-size: 0.9rem;
+    }
 </style>

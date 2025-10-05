@@ -20,5 +20,6 @@ class Message extends Model
         'title',
         'body',
         'recipient_type',
+        'attachment_path',
     ];
 }
