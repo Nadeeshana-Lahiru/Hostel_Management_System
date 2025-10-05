@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\Student;
+use App\Models\Warden;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AnnouncementEmail;
 
 class MessageController extends Controller
 {
@@ -39,7 +43,25 @@ class MessageController extends Controller
         }
 
          // 4. Create the message ONCE using the complete data array
-        Message::create($messageData);
+        $message = Message::create($messageData);
+
+        // 5. Get the email addresses of the recipients
+        $recipientEmails = collect();
+
+        if ($request->recipient_type === 'student_only' || $request->recipient_type === 'both') {
+            $studentEmails = Student::with('user')->get()->pluck('user.email')->filter();
+            $recipientEmails = $recipientEmails->merge($studentEmails);
+        }
+
+        if ($request->recipient_type === 'warden_only' || $request->recipient_type === 'both') {
+            $wardenEmails = Warden::with('user')->get()->pluck('user.email')->filter();
+            $recipientEmails = $recipientEmails->merge($wardenEmails);
+        }
+
+        // 6. Send the email to all recipients at once using BCC for privacy
+        if ($recipientEmails->isNotEmpty()) {
+            Mail::bcc($recipientEmails)->send(new AnnouncementEmail($message));
+        }
 
         return redirect()->route('admin.dashboard')->with('success', 'Message sent successfully!');
     }
