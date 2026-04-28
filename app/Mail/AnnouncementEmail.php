@@ -10,6 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Address;
 
 class AnnouncementEmail extends Mailable
 {
@@ -32,6 +33,9 @@ class AnnouncementEmail extends Mailable
     {
         return new Envelope(
             subject: $this->announcement->title, // Use the message title as the email subject
+            replyTo: [
+                new Address('no-reply@hms.seusl.ac.lk', 'Do Not Reply')
+            ]
         );
     }
 

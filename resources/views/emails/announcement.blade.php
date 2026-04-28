@@ -11,6 +11,7 @@
         p { margin: 0; }
         .content { white-space: pre-wrap; font-size: 16px; } 
         hr { border: 0; border-top: 1px solid #eee; }
+        .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #888; text-align: center; }
     </style>
 </head>
 <body>
@@ -18,6 +19,9 @@
         <h1>{{ $announcement->title }}</h1>
         <hr>
         <p class="content">{{ $announcement->body }}</p>
+        <div class="footer">
+            This is an automated message from the Hostel Management System SEUSL. Please do not reply to this email.
+        </div>
     </div>
 </body>
 </html>

@@ -195,6 +195,34 @@
             box-shadow: 0 0 0 3px rgba(231, 74, 59, 0.2);
         }
 
+        /* --- NEW UX FEATURES CSS --- */
+        .floating-group { position: relative; margin-bottom: 1.25rem; }
+        .floating-input {
+            width: 100%; padding: 22px 15px 8px !important; border-radius: 8px; border: 1px solid #ddd;
+            box-sizing: border-box; transition: all 0.2s; background-color: #fff; font-size: 1rem;
+        }
+        .floating-input:focus { outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2); }
+        .floating-label {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            color: #858796; transition: all 0.2s ease-out; pointer-events: none; margin: 0; font-weight: 500;
+        }
+        .floating-input:focus ~ .floating-label, .floating-input:not(:placeholder-shown) ~ .floating-label {
+            top: 12px; font-size: 0.75rem; color: #4e73df;
+        }
+        .floating-group .password-toggle { top: 50%; }
+        .caps-warning {
+            color: #e74a3b; font-size: 0.75rem; font-weight: 600; position: absolute; right: 45px; top: 50%;
+            transform: translateY(-50%); pointer-events: none; background: #fff; padding: 0 4px; border-radius: 4px;
+        }
+        /* Spinner */
+        .btn-login.loading { color: transparent !important; pointer-events: none; position: relative; }
+        .btn-login.loading::after {
+            content: ""; position: absolute; width: 18px; height: 18px; top: 50%; left: 50%;
+            margin-top: -9px; margin-left: -9px; border: 2px solid white; border-radius: 50%;
+            border-top-color: transparent; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
@@ -212,14 +240,16 @@
             
             <form id="mainLoginForm" action="{{ route('login.submit') }}" method="POST">
                 @csrf
-                <div class="form-group">
-                    <label for="username">Email or Registration Number</label>
-                    <input type="text" id="username" name="username" placeholder="Enter your email or reg no" required>
+                <div class="form-group floating-group">
+                    <input type="text" id="username" name="username" class="floating-input" placeholder=" " required>
+                    <label for="username" class="floating-label">Email or Registration Number</label>
                     <div class="inline-error-msg" id="username_error"></div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                <div class="form-group floating-group password-group">
+                    <input type="password" id="password" name="password" class="floating-input" placeholder=" " required>
+                    <label for="password" class="floating-label">Password</label>
+                    <span class="password-toggle" title="Show/Hide Password">&#128065;</span>
+                    <div id="caps-lock-warning" class="caps-warning" style="display: none;">Caps Lock ON</div>
                     <div class="inline-error-msg" id="password_error"></div>
                 </div>
                 
@@ -340,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
     function togglePasswordVisibility(e) {
-        const input = e.target.previousElementSibling;
+        const input = e.target.parentElement.querySelector('input');
         input.type = input.type === 'password' ? 'text' : 'password';
     }
 
@@ -434,6 +464,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const passwordInput = document.getElementById('password');
     const usernameError = document.getElementById('username_error');
     const passwordError = document.getElementById('password_error');
+    const capsLockWarning = document.getElementById('caps-lock-warning');
+
+    // Caps Lock Warning
+    if (passwordInput) {
+        passwordInput.addEventListener('keyup', function(e) {
+            if (e.getModifierState && e.getModifierState('CapsLock')) {
+                capsLockWarning.style.display = 'block';
+            } else {
+                capsLockWarning.style.display = 'none';
+            }
+        });
+        passwordInput.addEventListener('mousedown', function(e) {
+            if (e.getModifierState && e.getModifierState('CapsLock')) {
+                capsLockWarning.style.display = 'block';
+            } else {
+                capsLockWarning.style.display = 'none';
+            }
+        });
+    }
+
+    // Enter Key Support
+    [usernameInput, passwordInput].forEach(input => {
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkCredentialsBtn.click();
+                }
+            });
+        }
+    });
 
     // A helper function to clear previous errors
     function clearErrors() {
@@ -449,6 +510,9 @@ document.addEventListener('DOMContentLoaded', function () {
     checkCredentialsBtn.addEventListener('click', async () => {
         // First, clear any old errors from a previous attempt
         clearErrors();
+
+        // Show loading state
+        checkCredentialsBtn.classList.add('loading');
 
         // Get the form data
         const formData = new FormData(mainLoginForm);
@@ -483,6 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         passwordError.style.display = 'block';
                     }
                 }
+                checkCredentialsBtn.classList.remove('loading');
             // If the response IS okay, it means credentials are correct!
             } else {
                 // Now, submit the form to actually log the user in
@@ -493,6 +558,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('An error occurred:', error);
             passwordError.textContent = 'An unexpected error occurred. Please try again.';
             passwordError.style.display = 'block';
+            checkCredentialsBtn.classList.remove('loading');
         }
     });
 
