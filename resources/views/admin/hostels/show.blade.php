@@ -133,19 +133,87 @@
         display: none; position: fixed; z-index: 1000; left: 0; top: 0;
         width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);
         backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease-out;
     }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
     .modal-content {
-        background-color: #fefefe; margin: 10% auto; padding: 25px; border-radius: 8px;
-        width: 90%; max-width: 600px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        background-color: #ffffff; margin: 8% auto; padding: 30px; border-radius: 12px;
+        width: 90%; max-width: 650px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        animation: slideDown 0.3s ease-out;
+        font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #e3e6f0; }
-    .modal-header h3 { margin: 0; }
-    .current-warden { background-color: #f8f9fc; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem; }
-    .warden-table-container { max-height: 250px; overflow-y: auto; margin-top: 1rem; border: 1px solid #e3e6f0; border-radius: 5px; }
-    .warden-table { width: 100%; border-collapse: collapse; }
-    .warden-table th, .warden-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e3e6f0; }
-    .warden-table thead { position: sticky; top: 0; background-color: #f8f9fc; }
-    .warden-table tbody tr:hover { background-color: #f1f3f8; }
+
+    @keyframes slideDown {
+        from { transform: translateY(-30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header { 
+        display: flex; justify-content: space-between; align-items: center; 
+        padding-bottom: 15px; margin-bottom: 25px; 
+        border-bottom: 2px solid #f1f3f8; 
+    }
+    .modal-header h3 { margin: 0; color: #2c3e50; font-size: 1.5rem; font-weight: 700; }
+    
+    .close-btn {
+        color: #a0aec0; font-size: 28px; font-weight: bold; cursor: pointer;
+        transition: color 0.2s; background: none; border: none; padding: 0; line-height: 1;
+    }
+    .close-btn:hover { color: #e53e3e; }
+
+    .current-warden { 
+        background: linear-gradient(135deg, #f6f8fd 0%, #f1f5f9 100%);
+        padding: 1.25rem; border-radius: 8px; margin-bottom: 2rem; 
+        border-left: 5px solid #4e73df;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .current-warden strong { color: #4a5568; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .current-warden p { margin: 8px 0 0; color: #2d3748; font-size: 1.2rem; font-weight: 600; }
+
+    .warden-selection-label {
+        display: block; font-weight: 600; color: #4a5568; margin-bottom: 10px; font-size: 1.05rem;
+    }
+
+    .warden-table-container { 
+        max-height: 280px; overflow-y: auto; margin-top: 0.5rem; 
+        border: 1px solid #e2e8f0; border-radius: 8px; 
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .warden-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .warden-table th, .warden-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #edf2f7; }
+    .warden-table th { 
+        position: sticky; top: 0; background-color: #f8fafc; 
+        color: #4a5568; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;
+        z-index: 10; border-bottom: 2px solid #e2e8f0;
+    }
+    .warden-table tbody tr { transition: all 0.2s ease; cursor: pointer; border-left: 4px solid transparent; }
+    .warden-table tbody tr:hover { background-color: #f8fafc; }
+    .warden-table tbody tr.selected { background-color: #ebf4ff; border-left: 4px solid #4e73df; }
+    .warden-table tbody tr:last-child td { border-bottom: none; }
+    
+    .hidden-radio { opacity: 0; position: absolute; z-index: -1; width: 0; height: 0; }
+    .check-icon {
+        display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #cbd5e0; position: relative; transition: all 0.2s;
+        vertical-align: middle; margin-top: 2px;
+    }
+    .warden-table tbody tr:hover .check-icon { border-color: #a0aec0; }
+    .warden-table tbody tr.selected .check-icon { background-color: #4e73df; border-color: #4e73df; transform: scale(1.1); }
+    .warden-table tbody tr.selected .check-icon::after {
+        content: ''; position: absolute; top: 2px; left: 6px;
+        width: 5px; height: 10px; border: solid white;
+        border-width: 0 2px 2px 0; transform: rotate(45deg);
+    }
+
+    .modal-actions {
+        display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;
+        padding-top: 20px; border-top: 1px solid #f1f3f8;
+    }
     /* --- END OF NEW STYLES --- */
 
     /* --- NEW & COMPLETE BUTTON STYLES --- */
@@ -249,35 +317,38 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3>Manage Warden Assignment</h3>
-            <span style="cursor:pointer; font-size: 28px;" id="closeWardenModal">&times;</span>
+            <span class="close-btn" id="closeWardenModal">&times;</span>
         </div>
         
         <div class="current-warden">
-            <strong>Currently Assigned Warden:</strong>
-            <p style="margin-top: 5px;">{{ $hostel->warden->full_name ?? 'None' }}</p>
+            <strong>Currently Assigned Warden</strong>
+            <p>{{ $hostel->warden->full_name ?? 'None' }}</p>
         </div>
 
         <form action="{{ route('admin.hostels.assignWarden', $hostel->id) }}" method="POST">
             @csrf
             @method('PATCH')
 
-            <label for="warden_id"><strong>Select a New Warden:</strong></label>
+            <label for="warden_id" class="warden-selection-label">Select a New Warden</label>
             <div class="warden-table-container">
                 @if($availableWardens->isEmpty())
-                    <p style="text-align: center; padding: 1rem;">No other available wardens.</p>
+                    <p style="text-align: center; padding: 2rem; color: #718096; font-style: italic;">No other available wardens.</p>
                 @else
                     <table class="warden-table">
                         <thead>
                             <tr>
-                                <th>Select</th>
+                                <th style="width: 60px; text-align: center;">Select</th>
                                 <th>Name</th>
                                 <th>NIC</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($availableWardens as $warden)
-                            <tr>
-                                <td><input type="radio" name="warden_id" value="{{ $warden->id }}" required></td>
+                            <tr onclick="selectWardenRow(this)">
+                                <td style="text-align: center;">
+                                    <input type="radio" class="hidden-radio" name="warden_id" value="{{ $warden->id }}" required>
+                                    <span class="check-icon"></span>
+                                </td>
                                 <td>{{ $warden->full_name }}</td>
                                 <td>{{ $warden->nic }}</td>
                             </tr>
@@ -287,7 +358,7 @@
                 @endif
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+            <div class="modal-actions">
                 <button type="button" id="cancelAssign" class="btn btn-secondary">Cancel</button>
                 <button type="submit" class="btn btn-warning" @if($availableWardens->isEmpty()) disabled @endif>Assign</button>
             </div>
@@ -315,5 +386,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+function selectWardenRow(row) {
+    const radio = row.querySelector('input[type=radio]');
+    
+    if (row.classList.contains('selected')) {
+        // Deselect if already selected
+        row.classList.remove('selected');
+        radio.checked = false;
+    } else {
+        // Deselect all rows
+        document.querySelectorAll('.warden-table tbody tr').forEach(r => {
+            r.classList.remove('selected');
+            r.querySelector('input[type=radio]').checked = false;
+        });
+        
+        // Select the clicked row
+        row.classList.add('selected');
+        radio.checked = true;
+    }
+}
 </script>
 @endpush
